@@ -21,11 +21,16 @@ export default function OrdiniCaldi() {
       fetch(proxy)
         .then(res => res.json())
         .then(data => {
+          console.log("📦 RISPOSTA FETCH:", data);
+          if (!Array.isArray(data)) {
+            throw new Error("La risposta non è un array, ma: " + JSON.stringify(data));
+          }
+
           const oggi = new Date().toISOString().split("T")[0];
           const filtrati = data.filter(o => o.data === oggi);
           setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
         })
-        .catch(err => console.error("Errore fetch ordini:", err));
+        .catch(err => console.error("❌ Errore fetch ordini:", err));
     };
 
     fetchData();
@@ -61,7 +66,6 @@ export default function OrdiniCaldi() {
     <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8">
       <h1 className="text-2xl font-bold text-center text-red-600">ORDINI CALDI</h1>
 
-      {/* POST-IT ATTIVI */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         {ordini.filter(o => !o.ridotto && !o.completato).map((ordine, index) => (
           <div
@@ -90,7 +94,6 @@ export default function OrdiniCaldi() {
         ))}
       </div>
 
-      {/* DOCK - RIDOTTI */}
       {ordini.some(o => o.ridotto && !o.completato) && (
         <div className="pt-4 border-t border-gray-500">
           <h2 className="text-white text-sm font-semibold mb-2">Dock (ordini minimizzati):</h2>
@@ -107,7 +110,6 @@ export default function OrdiniCaldi() {
         </div>
       )}
 
-      {/* COMPLETATI */}
       {ordini.some(o => o.completato) && (
         <div className="pt-6 border-t border-gray-500">
           <h2 className="text-white text-sm font-semibold mb-2">Ordini completati:</h2>
