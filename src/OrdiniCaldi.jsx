@@ -1,88 +1,164 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const STAGE_COLORS = {
-  "CONFERMATO": "bg-yellow-200",
-  "IN PREPARAZIONE": "bg-orange-300",
+  "CONFERMATO": "bg-white/30",
+  "DA PREPARARE": "bg-yellow-300",
+  "IN PREPARAZIONE": "bg-orange-400",
   "PRONTO": "bg-green-300"
 };
 
 const trillo = new Audio("/trillo.mp3");
 
 export default function OrdiniCaldi() {
-  console.log("🔥 ORDINI CALDI MOCK ATTIVI");
+  const [ordini, setOrdini] = useState([]);
+  const [confermaCancellazione, setConfermaCancellazione] = useState(false);
 
-  const [ordini, setOrdini] = useState([
-    {
-      cliente: "Mario Rossi",
-      tipo: "RITIRO",
-      orario: "20:00",
-      piatti: ["1 Tempura Gamberi", "2 Gyoza"],
-      stato: "CONFERMATO"
-    },
-    {
-      cliente: "Luigi Bianchi",
-      tipo: "CONSEGNA",
-      orario: "20:30",
-      piatti: ["1 Yaki Tori", "1 Zuppa di Miso"],
-      stato: "CONFERMATO"
-    }
-  ]);
+  useEffect(() => {
+    const fetchData = () => {
+      fetch("https://script.google.com/macros/s/AKfycbxmHi2XQKgSwktoC41wGMuC6EoYKj-CUHdczhopyA/dev")
+        .then(res => res.json())
+        .then(data => {
+          const oggi = new Date().toISOString().split("T")[0];
+          const filtrati = data.filter(o => o.data === oggi);
+          setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
+        })
+        .catch(err => console.error("Errore fetch ordini:", err));
+    };
 
-  const aggiornaStato = (index, nuovoStato) => {
-    setOrdini(prev => {
-      const nuovi = [...prev];
-      nuovi[index].stato = nuovoStato;
-      return nuovi;
-    });
-    if (nuovoStato === "IN PREPARAZIONE") trillo.play();
+    fetchData();
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const aggiornaStato = (id, nuovoStato) => {
+    setOrdini(prev =>
+      prev.map(o =>
+        o.id === id ? { ...o, stato: nuovoStato } : o
+      )
+    );
+    if (nuovoStato === "DA PREPARARE") trillo.play();
+  };
+
+  const toggleRidotto = (id) => {
+    setOrdini(prev =>
+      prev.map(o => (o.id === id ? { ...o, ridotto: !o.ridotto } : o))
+    );
+  };
+
+  const segnaCompletato = (id) => {
+    setOrdini(prev =>
+      prev.map(o =>
+        o.id === id ? { ...o, completato: true, ridotto: true } : o
+      )
+    );
+  };
+
+  const cancellaCompletati = () => {
+    setOrdini(prev => prev.filter(o => !o.completato));
+    setConfermaCancellazione(false);
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold text-center text-red-600 mb-4">
-        TEST VERSION - MOCK
+    <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8">
+      <h1 className="text-2xl font-bold text-center text-red-600">
+        ORDINI CALDI
       </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {ordini.map((ordine, index) => (
+      {/* POST-IT ATTIVI */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+        {ordini.filter(o => !o.ridotto && !o.completato).map((ordine, index) => (
           <div
-            key={index}
-            className={`p-4 shadow-xl rounded-xl ${STAGE_COLORS[ordine.stato]} transition-all`}
+            key={ordine.id}
+            className={`shadow-xl rounded-xl ${STAGE_COLORS[ordine.stato]} transition-all`}
           >
-            <div className="space-y-2">
-              <div className="font-bold">
-                🧾 {ordine.cliente} ({ordine.tipo})
+            <div className="flex justify-between items-start p-2">
+              <div className="font-bold text-sm">
+                #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
               </div>
-              <div className="text-sm text-gray-700">🕒 {ordine.orario}</div>
+              <button
+                onClick={() => toggleRidotto(ordine.id)}
+                className="text-lg"
+                title="Riduci"
+              >
+                🔽
+              </button>
+            </div>
+
+            <div className="p-4 pt-0 space-y-2">
               <ul className="list-disc list-inside text-sm">
                 {ordine.piatti.map((p, i) => (
                   <li key={i}>{p}</li>
                 ))}
               </ul>
               <div className="flex justify-between pt-2 gap-1 flex-wrap">
-                <button
-                  onClick={() => aggiornaStato(index, "CONFERMATO")}
-                  className="px-2 py-1 bg-white border rounded"
-                >
-                  Confermato
-                </button>
-                <button
-                  onClick={() => aggiornaStato(index, "IN PREPARAZIONE")}
-                  className="px-2 py-1 bg-white border rounded"
-                >
-                  🔔 Preparazione
-                </button>
-                <button
-                  onClick={() => aggiornaStato(index, "PRONTO")}
-                  className="px-2 py-1 bg-white border rounded"
-                >
-                  Pronto
-                </button>
+                <button onClick={() => aggiornaStato(ordine.id, "CONFERMATO")} title="Confermato" className="p-2 bg-white border rounded">🥡</button>
+                <button onClick={() => aggiornaStato(ordine.id, "DA PREPARARE")} title="Da preparare" className="p-2 bg-white border rounded">🔔</button>
+                <button onClick={() => aggiornaStato(ordine.id, "IN PREPARAZIONE")} title="In preparazione" className="p-2 bg-white border rounded">🔥</button>
+                <button onClick={() => aggiornaStato(ordine.id, "PRONTO")} title="Pronto" className="p-2 bg-white border rounded">✅</button>
+                <button onClick={() => segnaCompletato(ordine.id)} title="Completa" className="p-2 bg-white border rounded">🗑️</button>
               </div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* DOCK - RIDOTTI */}
+      {ordini.some(o => o.ridotto && !o.completato) && (
+        <div className="pt-4 border-t border-gray-500">
+          <h2 className="text-white text-sm font-semibold mb-2">Dock (ordini minimizzati):</h2>
+          <div className="flex flex-wrap gap-2">
+            {ordini.filter(o => o.ridotto && !o.completato).map(ordine => (
+              <div
+                key={ordine.id}
+                className={`shadow-md rounded-lg px-3 py-2 flex items-center justify-between min-w-[200px] ${STAGE_COLORS[ordine.stato]}`}
+              >
+                <span className="text-sm font-bold truncate">
+                  #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
+                </span>
+                <button
+                  onClick={() => toggleRidotto(ordine.id)}
+                  className="text-lg"
+                  title="Espandi"
+                >
+                  🔼
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* COMPLETATI */}
+      {ordini.some(o => o.completato) && (
+        <div className="pt-6 border-t border-gray-500">
+          <h2 className="text-white text-sm font-semibold mb-2">Ordini completati:</h2>
+          <div className="flex flex-wrap gap-2">
+            {ordini.filter(o => o.completato).map(ordine => (
+              <div
+                key={ordine.id}
+                className={`shadow-md rounded-lg px-3 py-2 flex items-center justify-between min-w-[200px] ${STAGE_COLORS[ordine.stato]}`}
+              >
+                <span className="text-sm font-bold truncate">
+                  #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4">
+            {!confermaCancellazione ? (
+              <button onClick={() => setConfermaCancellazione(true)} className="px-4 py-2 bg-red-500 text-white rounded">
+                Cancella tutto
+              </button>
+            ) : (
+              <div className="space-x-2">
+                <span className="text-white">Sei sicuro?</span>
+                <button onClick={cancellaCompletati} className="px-3 py-1 bg-red-600 text-white rounded">Cancella</button>
+                <button onClick={() => setConfermaCancellazione(false)} className="px-3 py-1 bg-gray-300 rounded">Annulla</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
