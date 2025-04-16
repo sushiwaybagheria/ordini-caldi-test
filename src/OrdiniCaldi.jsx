@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { AudioLines } from "lucide-react";
+// import { AudioLines } from "lucide-react";
 
 const STAGE_COLORS = {
   "CONFERMATO": "bg-yellow-200",
@@ -43,7 +43,8 @@ export default function OrdiniCaldi() {
             </ul>
             <div className="flex justify-between pt-2 gap-1 flex-wrap">
               <button onClick={() => aggiornaStato(ordine.id, "CONFERMATO")} className="px-2 py-1 bg-white border rounded">Confermato</button>
-              <button onClick={() => aggiornaStato(ordine.id, "IN PREPARAZIONE")} className="px-2 py-1 bg-white border rounded flex items-center gap-1"><AudioLines className="w-4 h-4" /> Preparazione</button>
+              <Button onClick={() => aggiornaStato(ordine.id, "IN PREPARAZIONE")}>🔔 Preparazione</Button>
+
               <button onClick={() => aggiornaStato(ordine.id, "PRONTO")} className="px-2 py-1 bg-white border rounded">Pronto</button>
             </div>
           </div>
