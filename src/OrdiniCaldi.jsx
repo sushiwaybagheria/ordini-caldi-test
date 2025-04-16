@@ -13,23 +13,29 @@ export default function OrdiniCaldi() {
   const [ordini, setOrdini] = useState([]);
   const [confermaCancellazione, setConfermaCancellazione] = useState(false);
 
-  useEffect(() => {
-    const fetchData = () => {
-      fetch("https://script.google.com/macros/s/AKfycbxmHi2XQKgSwktoC41wGMuC6EoYKj-CUHdczhopyA/dev")
-        .then(res => res.json())
-        .then(data => {
-console.log("Dati ricevuti:", data); // 👈 AGGIUNGI QUESTA RIGA
-          const oggi = new Date().toISOString().split("T")[0];
-          const filtrati = data.filter(o => o.data === oggi);
-          setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
-        })
-        .catch(err => console.error("Errore fetch ordini:", err));
-    };
 
-    fetchData();
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
-  }, []);
+
+
+  useEffect(() => {
+  const fetchData = () => {
+    fetch("https://script.google.com/macros/s/AKfycbxmHi2XQKgSwktoC41wGMuC6EoYKj-CUHdczhopyA/dev")
+      .then(res => res.json())
+      .then(data => {
+        const oggi = new Date().toISOString().split("T")[0];
+        const filtrati = data.filter(o => o.data === oggi);
+        setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
+      })
+      .catch(err => console.error("Errore fetch ordini:", err));
+  };
+
+  fetchData();
+  const interval = setInterval(fetchData, 30000);
+  return () => clearInterval(interval);
+}, []);
+
+
+
+
 
   const aggiornaStato = (id, nuovoStato) => {
     setOrdini(prev =>
