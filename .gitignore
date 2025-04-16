@@ -1,0 +1,12 @@
+# Ignora pacchetti locali e file generati
+node_modules
+dist
+.env
+*.log
+.DS_Store
+
+# Ignora file temporanei di sistema/editor
+*.swp
+*.tmp
+.vscode
+.idea
