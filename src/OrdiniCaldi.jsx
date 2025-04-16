@@ -18,6 +18,7 @@ export default function OrdiniCaldi() {
       fetch("https://script.google.com/macros/s/AKfycbxmHi2XQKgSwktoC41wGMuC6EoYKj-CUHdczhopyA/dev")
         .then(res => res.json())
         .then(data => {
+console.log("Dati ricevuti:", data); // 👈 AGGIUNGI QUESTA RIGA
           const oggi = new Date().toISOString().split("T")[0];
           const filtrati = data.filter(o => o.data === oggi);
           setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
