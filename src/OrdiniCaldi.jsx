@@ -13,30 +13,40 @@ export default function OrdiniCaldi() {
   const [ordini, setOrdini] = useState([]);
   const [confermaCancellazione, setConfermaCancellazione] = useState(false);
 
-  useEffect(() => {
-    const endpoint = "https://script.google.com/macros/s/AKfycbxhdp45QwJwiIIVbmpfKkyGKfLyw2a6Gtewb6tYhsoShH2hdHzlPJ1G4RDYylxxU1s/exec";
-    const proxy = "https://corsproxy.io/?" + encodeURIComponent(endpoint);
 
-    const fetchData = () => {
-      fetch(proxy)
-        .then(res => res.json())
-        .then(data => {
-          console.log("📦 RISPOSTA FETCH:", data);
-          if (!Array.isArray(data)) {
-            throw new Error("La risposta non è un array, ma: " + JSON.stringify(data));
-          }
 
-          const oggi = new Date().toISOString().split("T")[0];
-          const filtrati = data.filter(o => o.data === oggi);
-          setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
-        })
-        .catch(err => console.error("❌ Errore fetch ordini:", err));
-    };
 
-    fetchData();
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
-  }, []);
+
+useEffect(() => {
+  const endpoint = "https://script.google.com/macros/s/AKfycbxhdp45QwJwiIIVbmpfKkyGKfLyw2a6Gtewb6tYhsoShH2hdHzlPJ1G4RDYylxxU1s/exec";
+  const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(endpoint);
+
+  const fetchData = () => {
+    fetch(proxy)
+      .then(res => res.json())
+      .then(wrapped => {
+        const data = JSON.parse(wrapped.contents);
+        console.log("📦 RISPOSTA FETCH:", data);
+        if (!Array.isArray(data)) {
+          throw new Error("La risposta non è un array, ma: " + JSON.stringify(data));
+        }
+        const oggi = new Date().toISOString().split("T")[0];
+        const filtrati = data.filter(o => o.data === oggi);
+        setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
+      })
+      .catch(err => console.error("❌ Errore fetch ordini:", err));
+  };
+
+  fetchData();
+  const interval = setInterval(fetchData, 30000);
+  return () => clearInterval(interval);
+}, []);
+
+
+
+
+
+
 
   const aggiornaStato = (id, nuovoStato) => {
     setOrdini(prev =>
