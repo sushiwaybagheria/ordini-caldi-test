@@ -14,18 +14,25 @@ export default function OrdiniCaldi() {
   const [confermaCancellazione, setConfermaCancellazione] = useState(false);
 
   useEffect(() => {
-    const endpoint = "https://script.google.com/macros/s/AKfycbxmHi2XQKgSwktoC41wGMuC6EoYKj-CUHdczhopyA/dev";
-    const proxy = "https://corsproxy.io/?" + encodeURIComponent(endpoint);
 
-    const fetchData = () => {
-      fetch(proxy)
-        .then(res => res.json())
-        .then(data => {
-          const oggi = new Date().toISOString().split("T")[0];
-          const filtrati = data.filter(o => o.data === oggi);
-          setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
-        })
-        .catch(err => console.error("Errore fetch ordini:", err));
+
+
+ const endpoint = "https://script.google.com/macros/s/AKfycbxhdp45QwJwiIIVbmpfKkyGKfLyw2a6Gtewb6tYhsoShH2hdHzlPJ1G4RDYylxxU1s/exec";
+const proxy = "https://corsproxy.io/?" + encodeURIComponent(endpoint);
+
+fetch(proxy)
+  .then(res => res.json())
+  .then(data => {
+    const oggi = new Date().toISOString().split("T")[0];
+    const filtrati = data.filter(o => o.data === oggi);
+    setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
+  })
+  .catch(err => console.error("Errore fetch ordini:", err));
+
+
+
+
+
     };
 
     fetchData();
