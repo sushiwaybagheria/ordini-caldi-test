@@ -33,7 +33,7 @@ fetch(proxy)
 
 
 
-    };
+    }
 
     fetchData();
     const interval = setInterval(fetchData, 30000);
