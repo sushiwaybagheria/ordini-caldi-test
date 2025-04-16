@@ -1,4 +1,3 @@
-
 {
   "name": "ordini-caldi",
   "version": "1.0.0",
@@ -10,11 +9,11 @@
   },
   "dependencies": {
     "lucide-react": "^0.281.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.0.0",
-    "vite": "^5.0.0"
+    "@vitejs/plugin-react": "^4.4.0",
+    "vite": "^5.4.18"
   }
 }
