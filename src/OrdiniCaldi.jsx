@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const STAGE_COLORS = {
   "CONFERMATO": "bg-yellow-200",
@@ -43,4 +43,46 @@ export default function OrdiniCaldi() {
         TEST VERSION - MOCK
       </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {ordini.map((ordine, index) => (
+          <div
+            key={index}
+            className={`p-4 shadow-xl rounded-xl ${STAGE_COLORS[ordine.stato]} transition-all`}
+          >
+            <div className="space-y-2">
+              <div className="font-bold">
+                🧾 {ordine.cliente} ({ordine.tipo})
+              </div>
+              <div className="text-sm text-gray-700">🕒 {ordine.orario}</div>
+              <ul className="list-disc list-inside text-sm">
+                {ordine.piatti.map((p, i) => (
+                  <li key={i}>{p}</li>
+                ))}
+              </ul>
+              <div className="flex justify-between pt-2 gap-1 flex-wrap">
+                <button
+                  onClick={() => aggiornaStato(index, "CONFERMATO")}
+                  className="px-2 py-1 bg-white border rounded"
+                >
+                  Confermato
+                </button>
+                <button
+                  onClick={() => aggiornaStato(index, "IN PREPARAZIONE")}
+                  className="px-2 py-1 bg-white border rounded"
+                >
+                  🔔 Preparazione
+                </button>
+                <button
+                  onClick={() => aggiornaStato(index, "PRONTO")}
+                  className="px-2 py-1 bg-white border rounded"
+                >
+                  Pronto
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
