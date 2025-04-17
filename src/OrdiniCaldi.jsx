@@ -3,7 +3,30 @@ import { useState, useEffect } from "react";
 
 // <-- inizio funzione OrdiniCaldi -->
 export default function OrdiniCaldi() {
-  const [ordini, setOrdini] = useState([]);
+ 
+
+
+
+
+<-- usestate vecchio  const [ordini, setOrdini] = useState([]);
+
+// <-- inizio usestate nuovo-->
+const [ordini, setOrdini] = useState(() => {
+  const statiSalvati = JSON.parse(localStorage.getItem("statiOrdini") || "{}");
+  return Object.entries(statiSalvati).map(([id, stato]) => ({
+    id: parseInt(id),
+    orario: "", piatti: [], tipo: "", data: "", stato: "CONFERMATO",
+    ...stato
+  }));
+});
+
+// <-- fine usestate nuovo-->
+
+
+
+
+
+
   const [confermaCancellazione, setConfermaCancellazione] = useState(false);
 
   // <-- inizio funzione useEffect -->
