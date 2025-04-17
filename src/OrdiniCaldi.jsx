@@ -27,19 +27,21 @@ const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(endpoin
 
 
   const fetchData = () => {
+
     fetch(proxy)
-      .then(res => res.json())
-      .then(wrapped => {
-        const data = JSON.parse(wrapped.contents);
-        console.log("📦 RISPOSTA FETCH:", data);
-        if (!Array.isArray(data)) {
-          throw new Error("La risposta non è un array, ma: " + JSON.stringify(data));
-        }
-        const oggi = new Date().toISOString().split("T")[0];
-        const filtrati = data.filter(o => o.data === oggi);
-        setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
-      })
-      .catch(err => console.error("❌ Errore fetch ordini:", err));
+  .then(res => res.text())
+  .then(txt => {
+    console.log("📦 RISPOSTA RAW:", txt);
+
+if (!txt || txt.trim() === "") throw new Error("Risposta vuota dal server");
+
+    const data = JSON.parse(txt);
+    const oggi = new Date().toISOString().split("T")[0];
+    const filtrati = data.filter(o => o.data === oggi);
+    setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
+  })
+  .catch(err => console.error("❌ Errore fetch ordini:", err));
+
   };
 
   fetchData();
