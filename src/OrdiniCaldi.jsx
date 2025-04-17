@@ -101,23 +101,7 @@ export default function OrdiniCaldi() {
   };
   // <-- fine funzione ripristinaOrdine -->
 
-  // <-- inizio funzione ripristinaOrdine -->
-const ripristinaOrdine = (id) => {
-  setOrdini(prev =>
-    prev.map(o =>
-      o.id === id ? { ...o, completato: false, ridotto: false, archiviato: false } : o
-    )
-  );
 
-  const stati = JSON.parse(localStorage.getItem("statiOrdini") || "{}");
-  if (stati[id]) {
-    stati[id].completato = false;
-    stati[id].ridotto = false;
-    stati[id].archiviato = false;
-    localStorage.setItem("statiOrdini", JSON.stringify(stati));
-  }
-};
-// <-- fine funzione ripristinaOrdine -->
 
 // <-- inizio funzione cancellaCompletati -->
   const cancellaCompletati = () => {
