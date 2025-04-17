@@ -8,7 +8,7 @@ export default function OrdiniCaldi() {
 
 
 
-<-- usestate vecchio  const [ordini, setOrdini] = useState([]);
+// <-- usestate vecchio  const [ordini, setOrdini] = useState([]);
 
 // <-- inizio usestate nuovo-->
 const [ordini, setOrdini] = useState(() => {
