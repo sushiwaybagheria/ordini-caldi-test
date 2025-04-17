@@ -24,13 +24,14 @@ function OrdiniCaldi() {
         .then(data => {
           const oggi = new Date().toISOString().split("T")[0];
           const filtrati = data.filter(o => o.data === oggi);
-          setOrdini(
-            filtrati.map(o => ({
+          setOrdini(prev => {
+            const mappaPrecedente = Object.fromEntries(prev.map(o => [o.id, o]));
+            return filtrati.map(o => ({
               ...o,
-              ridotto: ridottiLS.includes(o.id),
-              completato: completatiLS.includes(o.id)
-            }))
-          );
+              ridotto: mappaPrecedente[o.id]?.ridotto || ridottiLS.includes(o.id),
+              completato: mappaPrecedente[o.id]?.completato || completatiLS.includes(o.id),
+            }));
+          });
         })
         .catch(err => console.error("❌ Errore fetch ordini (proxy):", err));
     };
