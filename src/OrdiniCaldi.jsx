@@ -22,32 +22,22 @@ export default function OrdiniCaldi() {
 
 
 useEffect(() => {
-const endpoint = "https://script.google.com/macros/s/AKfycby0U00VFwJN2VeGQZiP0gLYZi5WNA5R3erjI4Nl4dePQ2RjLgqcDDh2hLZ-0ikteEI/exec";
-const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(endpoint);
-
-
   const fetchData = () => {
-
-    fetch(proxy)
-  .then(res => res.text())
-  .then(txt => {
-    console.log("📦 RISPOSTA RAW:", txt);
-
-if (!txt || txt.trim() === "") throw new Error("Risposta vuota dal server");
-
-    const data = JSON.parse(txt);
-    const oggi = new Date().toISOString().split("T")[0];
-    const filtrati = data.filter(o => o.data === oggi);
-    setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
-  })
-  .catch(err => console.error("❌ Errore fetch ordini:", err));
-
+    fetch("/api/proxy")
+      .then(res => res.json())
+      .then(data => {
+        const oggi = new Date().toISOString().split("T")[0];
+        const filtrati = data.filter(o => o.data === oggi);
+        setOrdini(filtrati.map(o => ({ ...o, ridotto: false, completato: false })));
+      })
+      .catch(err => console.error("❌ Errore fetch ordini (proxy):", err));
   };
 
   fetchData();
   const interval = setInterval(fetchData, 30000);
   return () => clearInterval(interval);
 }, []);
+
 
 
 
