@@ -3,30 +3,7 @@ import { useState, useEffect } from "react";
 
 // <-- inizio funzione OrdiniCaldi -->
 export default function OrdiniCaldi() {
- 
-
-
-
-
-// <-- usestate vecchio  const [ordini, setOrdini] = useState([]);
-
-// <-- inizio usestate nuovo-->
-const [ordini, setOrdini] = useState(() => {
-  const statiSalvati = JSON.parse(localStorage.getItem("statiOrdini") || "{}");
-  return Object.entries(statiSalvati).map(([id, stato]) => ({
-    id: parseInt(id),
-    orario: "", piatti: [], tipo: "", data: "", stato: "CONFERMATO",
-    ...stato
-  }));
-});
-
-// <-- fine usestate nuovo-->
-
-
-
-
-
-
+  const [ordini, setOrdini] = useState([]);
   const [confermaCancellazione, setConfermaCancellazione] = useState(false);
 
   // <-- inizio funzione useEffect -->
@@ -106,9 +83,47 @@ const [ordini, setOrdini] = useState(() => {
   };
   // <-- fine funzione segnaCompletato -->
 
-  // <-- inizio funzione cancellaCompletati -->
+  // <-- inizio funzione ripristinaOrdine -->
+  const ripristinaOrdine = (id) => {
+    setOrdini(prev =>
+      prev.map(o =>
+        o.id === id ? { ...o, completato: false, ridotto: false, archiviato: false } : o
+      )
+    );
+
+    const stati = JSON.parse(localStorage.getItem("statiOrdini") || "{}");
+    if (stati[id]) {
+      stati[id].completato = false;
+      stati[id].ridotto = false;
+      stati[id].archiviato = false;
+      localStorage.setItem("statiOrdini", JSON.stringify(stati));
+    }
+  };
+  // <-- fine funzione ripristinaOrdine -->
+
+  // <-- inizio funzione ripristinaOrdine -->
+const ripristinaOrdine = (id) => {
+  setOrdini(prev =>
+    prev.map(o =>
+      o.id === id ? { ...o, completato: false, ridotto: false, archiviato: false } : o
+    )
+  );
+
+  const stati = JSON.parse(localStorage.getItem("statiOrdini") || "{}");
+  if (stati[id]) {
+    stati[id].completato = false;
+    stati[id].ridotto = false;
+    stati[id].archiviato = false;
+    localStorage.setItem("statiOrdini", JSON.stringify(stati));
+  }
+};
+// <-- fine funzione ripristinaOrdine -->
+
+// <-- inizio funzione cancellaCompletati -->
   const cancellaCompletati = () => {
-    const nuovi = ordini.filter(o => !o.completato);
+    const nuovi = ordini.map(o =>
+      o.completato ? { ...o, archiviato: true } : o
+    );
     setOrdini(nuovi);
     setConfermaCancellazione(false);
     const stati = JSON.parse(localStorage.getItem("statiOrdini") || "{}");
@@ -159,6 +174,7 @@ const [ordini, setOrdini] = useState(() => {
                 <span className="text-sm font-bold truncate">
                   #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
                 </span>
+                <button onClick={() => ripristinaOrdine(ordine.id)} title="Ripristina">♻️</button>
                 <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Espandi">🔼</button>
               </div>
             ))}
@@ -171,11 +187,12 @@ const [ordini, setOrdini] = useState(() => {
         <div className="pt-6 border-t border-gray-500">
           <h2 className="text-white text-sm font-semibold mb-2">Ordini completati:</h2>
           <div className="flex flex-wrap gap-2">
-            {ordini.filter(o => o.completato).map(ordine => (
+            {ordini.filter(o => o.completato && !o.archiviato).map(ordine => (
               <div key={ordine.id} className="shadow-md rounded-lg px-3 py-2 flex items-center justify-between min-w-[200px] bg-green-300">
                 <span className="text-sm font-bold truncate">
                   #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
                 </span>
+                <button onClick={() => ripristinaOrdine(ordine.id)} title="Ripristina">♻️</button>
               </div>
             ))}
           </div>
@@ -185,6 +202,7 @@ const [ordini, setOrdini] = useState(() => {
             ) : (
               <div className="space-x-2">
                 <span className="text-white">Sei sicuro?</span>
+                <button onClick={() => ripristinaOrdine(ordine.id)} title="Ripristina">♻️</button>
                 <button onClick={cancellaCompletati} className="px-3 py-1 bg-red-600 text-white rounded">Cancella</button>
                 <button onClick={() => setConfermaCancellazione(false)} className="px-3 py-1 bg-gray-300 rounded">Annulla</button>
               </div>
