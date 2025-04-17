@@ -17,9 +17,14 @@ export default function OrdiniCaldi() {
 
 
 
+
+
+
+
 useEffect(() => {
-  const endpoint = "https://script.google.com/macros/s/AKfycbxhdp45QwJwiIIVbmpfKkyGKfLyw2a6Gtewb6tYhsoShH2hdHzlPJ1G4RDYylxxU1s/exec";
-  const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(endpoint);
+const endpoint = "https://script.google.com/macros/s/AKfycby0U00VFwJN2VeGQZiP0gLYZi5WNA5R3erjI4Nl4dePQ2RjLgqcDDh2hLZ-0ikteEI/exec";
+const proxy = "https://api.allorigins.win/raw?url=" + encodeURIComponent(endpoint);
+
 
   const fetchData = () => {
     fetch(proxy)
