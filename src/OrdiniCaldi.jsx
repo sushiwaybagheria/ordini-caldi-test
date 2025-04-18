@@ -6,22 +6,16 @@ export default function OrdiniCaldi() {
   useEffect(() => {
     const fetchOrdini = async () => {
       try {
-       
-
-
-
-
-
-const endpoint = "https://script.google.com/macros/s/AKfycbyNDg8p5oMOvOH4-v-hesX_AirmxhHH_ow3SXt5Ed3tceIjnox2ABWXo-2rOeUIHTk/exec";
+        const endpoint = "https://script.google.com/macros/s/AKfycbyNDg8p5oMOvOH4-v-hesX_AirmxhHH_ow3SXt5Ed3tceIjnox2ABWXo-2rOeUIHTk/exec";
         const res = await fetch(endpoint);
         const data = await res.json();
 
         const oggi = new Date().toLocaleDateString("it-IT").split("/").reverse().join("-");
         console.log("📅 Oggi è:", oggi);
-        console.log("📦 Risposta fetch:", data);
+        console.log("📦 Tutte le date nei dati:", data.map(o => o.data));
 
         const filtrati = data
-          .filter(o => o.data === oggi)
+          .filter(o => o.data && o.data.trim() === oggi)
           .map(o => ({
             ...o,
             piatti: Array.isArray(o.piatti) ? o.piatti : JSON.parse(o.piatti)
@@ -30,7 +24,7 @@ const endpoint = "https://script.google.com/macros/s/AKfycbyNDg8p5oMOvOH4-v-hesX
         console.log("✅ Ordini filtrati:", filtrati);
         setOrdini(filtrati);
       } catch (err) {
-        console.error("❌ Errore fetch ordini (con log):", err);
+        console.error("❌ Errore fetch ordini (data debug):", err);
       }
     };
 
@@ -41,7 +35,7 @@ const endpoint = "https://script.google.com/macros/s/AKfycbyNDg8p5oMOvOH4-v-hesX
 
   return (
     <div className="p-4 min-h-screen bg-gray-800 text-white">
-      <h1 className="text-2xl font-bold text-center text-red-600">ORDINI CALDI (debug)</h1>
+      <h1 className="text-2xl font-bold text-center text-red-600">ORDINI CALDI (data debug)</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-6">
         {ordini.map((ordine) => (
           <div key={ordine.id} className="bg-white/30 p-4 rounded-xl shadow-xl">
