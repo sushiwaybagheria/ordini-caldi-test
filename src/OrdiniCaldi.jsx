@@ -6,7 +6,13 @@ export default function OrdiniCaldi() {
   useEffect(() => {
     const fetchOrdini = async () => {
       try {
-        const endpoint = "https://script.google.com/macros/s/AKfycbyNDg8p5oMOvOH4-v-hesX_AirmxhHH_ow3SXt5Ed3tceIjnox2ABWXo-2rOeUIHTk/exec";
+       
+
+
+
+
+
+const endpoint = "https://script.google.com/macros/s/AKfycbyNDg8p5oMOvOH4-v-hesX_AirmxhHH_ow3SXt5Ed3tceIjnox2ABWXo-2rOeUIHTk/exec";
         const res = await fetch(endpoint);
         const data = await res.json();
 
