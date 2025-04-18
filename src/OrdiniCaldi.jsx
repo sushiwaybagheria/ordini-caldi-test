@@ -12,10 +12,14 @@ export default function OrdiniCaldi() {
 
         const oggi = new Date().toLocaleDateString("it-IT").split("/").reverse().join("-");
         console.log("📅 Oggi è:", oggi);
-        console.log("📦 Tutte le date nei dati:", data.map(o => o.data));
+        console.log("📦 Tutte le date (raw):", data.map(o => o.data));
 
         const filtrati = data
-          .filter(o => o.data && o.data.trim() === oggi)
+          .filter(o => {
+            if (!o.data) return false;
+            const dataLocal = new Date(o.data).toLocaleDateString("it-IT").split("/").reverse().join("-");
+            return dataLocal === oggi;
+          })
           .map(o => ({
             ...o,
             piatti: Array.isArray(o.piatti) ? o.piatti : JSON.parse(o.piatti)
@@ -24,7 +28,7 @@ export default function OrdiniCaldi() {
         console.log("✅ Ordini filtrati:", filtrati);
         setOrdini(filtrati);
       } catch (err) {
-        console.error("❌ Errore fetch ordini (data debug):", err);
+        console.error("❌ Errore fetch ordini (date fix):", err);
       }
     };
 
@@ -35,7 +39,7 @@ export default function OrdiniCaldi() {
 
   return (
     <div className="p-4 min-h-screen bg-gray-800 text-white">
-      <h1 className="text-2xl font-bold text-center text-red-600">ORDINI CALDI (data debug)</h1>
+      <h1 className="text-2xl font-bold text-center text-red-600">ORDINI CALDI (data fixed)</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-6">
         {ordini.map((ordine) => (
           <div key={ordine.id} className="bg-white/30 p-4 rounded-xl shadow-xl">
