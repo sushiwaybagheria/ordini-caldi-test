@@ -10,7 +10,8 @@ export default function OrdiniCaldi() {
         const res = await fetch(endpoint);
         const data = await res.json();
 
-        const oggi = new Date().toISOString().split("T")[0];
+        const oggi = new Date().toLocaleDateString("it-IT").split("/").reverse().join("-");
+
 
         const filtrati = data
           .filter(o => o.data === oggi)
