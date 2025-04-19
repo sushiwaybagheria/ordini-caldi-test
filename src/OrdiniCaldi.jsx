@@ -256,14 +256,17 @@ const aggiornaStato = (id, nuovoStato) => {
 
 
             <div className="flex justify-between items-start p-2">
-              <div className="font-bold text-sm">
+            <div className="font-bold text-lg">
+
+
                 #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
                 <div className="text-xs text-gray-700">{calcolaTempoResiduo(ordine.data, ordine.orario)}</div>
               </div>
               <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Riduci">🔽</button>
             </div>
             <div className="p-4 pt-0 space-y-2">
-              <ul className="list-disc list-inside text-sm">
+              <ul className="list-disc list-inside text-base">
+
                 {ordine.piatti.map((p, i) => (<li key={i}>{p}</li>))}
               </ul>
               <div className="flex justify-between pt-2 gap-1 flex-wrap">
