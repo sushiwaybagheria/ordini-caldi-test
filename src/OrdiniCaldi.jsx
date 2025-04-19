@@ -147,17 +147,25 @@ useEffect(() => {
     });
   };
 
-  const aggiornaStato = (id, nuovoStato) => {
-    setOrdini(prev =>
-      prev.map(o =>
-        o.id === id
-          ? (salvaStatoOrdine({ ...o, stato: nuovoStato }), { ...o, stato: nuovoStato })
-          : o
-      )
-    );
-// if (nuovoStato === "DA PREPARARE") trillo.play();
 
-  };
+
+
+
+const aggiornaStato = (id, nuovoStato) => {
+  setOrdini(prev =>
+    prev.map(o =>
+      o.id === id
+        ? (salvaStatoOrdine({ ...o, stato: nuovoStato }), { ...o, stato: nuovoStato })
+        : o
+    )
+  );
+  
+  // Riproduci sempre il trillo localmente quando passa a "DA PREPARARE"
+  if (nuovoStato === "DA PREPARARE") {
+    trillo.play();
+  }
+};
+
 
   const toggleRidotto = (id) => {
     setOrdini(prev =>
