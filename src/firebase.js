@@ -12,3 +12,4 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+// Aggiornamento per forzare nuovo commit - 19 aprile 2025
