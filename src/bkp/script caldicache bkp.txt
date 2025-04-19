@@ -1,0 +1,152 @@
+function aggiornaCacheOrdini() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("OrdiniCache") || SpreadsheetApp.getActiveSpreadsheet().insertSheet("OrdiniCache");
+  sheet.clearContents();
+  sheet.appendRow(["id", "cliente", "tipo", "orario", "data", "piatti"]);
+
+  const threads = GmailApp.search('from:info@menuof.com subject:"hai ricevuto un nuovo ordine"', 0, 30);
+  const messages = GmailApp.getMessagesForThreads(threads).flat();
+
+  const articoliCaldi = [
+    "tempura gamberi", "gamberone kataifi", "tempure salmone", "tempura mix", "sfoglie di gambero", "tempura di tonno", "tempure verdure",
+    "cottobox", "starterbox", "hosomaki salmone in tempura", "hosomaki tonno in tempura", "futomaki ebitempura in tempura",
+    "futomaki brazil in tempura", "futomaki granchio in tempura", "futomaki philadelfia in tempura",
+    "gyoza", "kushi sake", "yaki tori", "zuppa di miso", "zuppa di pollo", "shoyu ramen",
+    "hotphila almond", "hotphila pistacchio", "hotmaki guacamole", "hotmaki katsuobushi",
+    "hotphila shiitake", "hotphila tropea", "hotphila fragole", "hot spicy", "new hotphila almond"
+  ];
+
+  function normalizza(testo) {
+    return testo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ").trim();
+  }
+
+  function matchCaldo(nome) {
+    const normalizzato = normalizza(nome);
+    return articoliCaldi.some(caldo => normalizzato.includes(normalizza(caldo)));
+  }
+
+  for (let i = 0; i < messages.length; i++) {
+    const msg = messages[i];
+    const body = msg.getBody();
+
+    const idMatch = msg.getSubject().match(/#(\d+)/);
+    const id = idMatch ? parseInt(idMatch[1]) : i;
+
+    const dataMatch = body.match(/Consegna alle:<\/b>\s*(\d{2}\/\d{2}\/\d{4})/);
+    const orarioMatch = body.match(/Consegna alle:<\/b>.*?<br\s*\/?>\s*(\d{2}:\d{2})/);
+    const clienteMatch = body.match(/Cliente:<\/b>\s*(.*?)<br\s*\/?>/i);
+    const tipoMatch = body.match(/Tipo di Ordine:<\/b>\s*(.*?)<br\s*\/?>/i);
+
+    if (!dataMatch || !orarioMatch || !clienteMatch || !tipoMatch) continue;
+
+    const [giorno, mese, anno] = dataMatch[1].split("/");
+    const dataOrdine = new Date(`${anno}-${mese}-${giorno}`);
+    const orario = orarioMatch[1];
+    const cliente = clienteMatch[1].trim();
+    const tipo = tipoMatch[1].toUpperCase().includes("RITIRO") ? "RITIRO" : "CONSEGNA";
+
+    const piatti = [];
+    const righe = body.split(/<tr[^>]*>/gi);
+
+    for (let riga of righe) {
+      const matchPiatto = riga.match(/<td[^>]*>\s*<div>(.*?)<\/div>.*?<\/td>\s*<td[^>]*>(\d+)<\/td>/i);
+      if (matchPiatto) {
+        let nome = matchPiatto[1].replace(/-\s*ravioli giapponesi/i, "").trim();
+        const quantita = parseInt(matchPiatto[2]);
+
+        let opzioni = [];
+        const opzioniMatch = [...riga.matchAll(/<i>\+([^<]*)<\/i>/gi)];
+        for (let op of opzioniMatch) {
+          const descrizione = op[1]
+          
+          
+          
+ .replace(/\(scelta consigliata\)/gi, "")  // rimuove tutta la parentesi
+  .replace(/&euro;.*$/, "")                 // rimuove prezzo
+  .trim();
+
+
+
+
+
+          if (descrizione) opzioni.push("+" + descrizione);
+        }
+
+
+if (/gyoza/i.test(nome)) {
+  let testo = `${quantita}x Gyoza`;
+  const icone = {
+    verdure: "🥦",
+    gambero: "🍤",
+    pollo: "🐔"
+  };
+
+  for (let opzione of opzioni) {
+    const op = opzione.toLowerCase();
+
+    if (/0 ?pezzi/.test(op)) continue;
+
+    if (/verdure/.test(op)) {
+      const qty = op.match(/\d+/);
+      if (qty) testo += ` | ${qty[0]}pz ${icone.verdure}`;
+    } else if (/gambero/.test(op)) {
+      const qty = op.match(/\d+/);
+      if (qty) testo += ` | ${qty[0]}pz ${icone.gambero}`;
+    } else if (/pollo/.test(op)) {
+      const qty = op.match(/\d+/);
+      if (qty) testo += ` | ${qty[0]}pz ${icone.pollo}`;
+    }
+  }
+
+  piatti.push(testo);
+}
+
+        
+        
+        
+        else if (matchCaldo(nome)) {
+          let testo = `${quantita}x ${nome}`;
+          if (opzioni.length > 0) {
+            testo += " " + opzioni.join(" ");
+          }
+          piatti.push(testo);
+        }
+
+
+
+
+      }
+    }
+
+    if (piatti.length > 0) {
+      
+      Logger.log(`ORDINE salvato: ${id} - ${cliente} - ${orario} - ${JSON.stringify(piatti)}`);
+
+      
+      sheet.appendRow([id, cliente, tipo, orario, dataOrdine, JSON.stringify(piatti)]);
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+function doGet() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("OrdiniCache");
+  const data = sheet.getDataRange().getValues();
+  const headers = data.shift();
+
+  const json = data.map(row => {
+    const obj = {};
+    headers.forEach((key, i) => {
+      obj[key] = key === "piatti" ? JSON.parse(row[i]) : row[i];
+    });
+    return obj;
+  });
+
+  return ContentService.createTextOutput(JSON.stringify(json)).setMimeType(ContentService.MimeType.JSON);
+}
