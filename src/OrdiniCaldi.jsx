@@ -308,7 +308,7 @@ const ripristinaOrdine = (id) => {
               </ul>
 
 
-// START campo note ordine
+ </br>
 <textarea
   className="w-full p-2 text-sm bg-white rounded border mt-2"
   rows={2}
@@ -316,7 +316,7 @@ const ripristinaOrdine = (id) => {
   value={ordine.note}
   onChange={(e) => aggiornaNota(ordine.id, e.target.value)}
 ></textarea>
-// END campo note ordine
+
 
 
 
