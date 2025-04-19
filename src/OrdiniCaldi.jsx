@@ -9,19 +9,27 @@ const STAGE_COLORS = {
 
 const trillo = new Audio("/trillo.mp3");
 
-function calcolaTempoResiduo(orarioConsegna) {
+
+
+
+function calcolaTempoResiduo(dataISO, orarioConsegna) {
   const [hh, mm] = orarioConsegna.split(":").map(Number);
-  const oraConsegna = new Date();
-  oraConsegna.setHours(hh, mm, 0, 0);
+  const dataOrdine = new Date(dataISO);
+  dataOrdine.setHours(hh, mm, 0, 0);
 
   const adesso = new Date();
-  const diffMs = oraConsegna - adesso;
+  const diffMs = dataOrdine - adesso;
   const diffMin = Math.round(diffMs / 60000);
 
   if (diffMin > 0) return `Consegna tra ${diffMin} min`;
   if (diffMin === 0) return "Consegna ora";
   return `In ritardo di ${Math.abs(diffMin)} min`;
 }
+
+
+
+
+
 
 export default function OrdiniCaldi() {
   const [ordini, setOrdini] = useState([]);
@@ -158,7 +166,8 @@ export default function OrdiniCaldi() {
             <div className="flex justify-between items-start p-2">
               <div className="font-bold text-sm">
                 #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
-                <div className="text-xs text-gray-700">{calcolaTempoResiduo(ordine.orario)}</div>
+                <div className="text-xs text-gray-700">{calcolaTempoResiduo(ordine.data, ordine.orario)}</div>
+
               </div>
               <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Riduci">🔽</button>
             </div>
