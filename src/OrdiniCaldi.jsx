@@ -256,7 +256,7 @@ const aggiornaStato = (id, nuovoStato) => {
 
 
             <div className="flex justify-between items-start p-2">
-            <div className="font-bold text-2xl">
+            <div className="font-bold text-3xl">
 
 
                 #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
@@ -265,7 +265,7 @@ const aggiornaStato = (id, nuovoStato) => {
               <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Riduci">🔽</button>
             </div>
             <div className="p-4 pt-0 space-y-2">
-              <ul className="list-disc list-inside text-base">
+              <ul className="list-disc list-inside text-xl">
 
                 {ordine.piatti.map((p, i) => (<li key={i}>{p}</li>))}
               </ul>
