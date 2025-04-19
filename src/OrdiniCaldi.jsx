@@ -293,11 +293,24 @@ const ripristinaOrdine = (id) => {
 
 
             <div className="flex justify-between items-start p-2">
-            <div className="font-bold text-3xl">
 
 
-                #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
-                <div className="text-xs text-gray-700">{calcolaTempoResiduo(ordine.data, ordine.orario)}</div>
+
+
+
+
+// START intestazione ordine con nome cliente
+<div className="font-bold text-3xl">
+  #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
+  <div className="text-xs text-gray-300 truncate">{ordine.cliente}</div>
+</div>
+// END intestazione ordine con nome cliente
+
+
+
+
+
+
               </div>
               <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Riduci">🔽</button>
             </div>
@@ -327,6 +340,15 @@ const ripristinaOrdine = (id) => {
                 <button onClick={() => aggiornaStato(ordine.id, "PRONTO")} className="p-2 bg-white border rounded">✅</button>
                 <button onClick={() => segnaCompletato(ordine.id)} className="p-2 bg-white border rounded">🗑️</button>
               </div>
+
+
+// START tempo residuo in basso a destra
+<div className="text-[11px] text-right text-gray-400 w-full pr-1">
+  {calcolaTempoResiduo(ordine.data, ordine.orario)}
+</div>
+// END tempo residuo in basso a destra
+
+
             </div>
           </div>
         ))}
