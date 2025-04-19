@@ -45,8 +45,10 @@ function staPerScadere(dataISO, orarioConsegna) {
   const adesso = new Date();
   const diffMin = Math.round((dataOrdine - adesso) / 60000);
 
-  return diffMin <= 10 && diffMin >= 0;
+  // Bordi gialli se mancano meno di 10 minuti oppure se è già passato
+  return diffMin <= 10;
 }
+
 
 
 
