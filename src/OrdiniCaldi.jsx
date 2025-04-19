@@ -10,7 +10,7 @@ const STAGE_COLORS = {
 const trillo = new Audio("/trillo.mp3");
 
 function calcolaTempoResiduo(orarioConsegna) {
-  const [hh, mm] = orarioConsegna.split(":".padEnd(2)).map(Number);
+  const [hh, mm] = orarioConsegna.split(":").map(Number);
   const oraConsegna = new Date();
   oraConsegna.setHours(hh, mm, 0, 0);
 
@@ -38,7 +38,7 @@ export default function OrdiniCaldi() {
         const ieri = new Date();
         ieri.setDate(oggi.getDate() - 1);
 
-        const format = (d) => d.toLocaleDateString("it-IT").split("/").reverse().join("-");
+        const format = (d) => d.toISOString().split("T")[0];
 
         const statiSalvati = JSON.parse(localStorage.getItem("statiOrdini") || "{}");
 
@@ -56,8 +56,8 @@ export default function OrdiniCaldi() {
             archiviato: statiSalvati[o.id]?.archiviato || false
           }))
           .sort((a, b) => {
-            const [ha, ma] = a.orario.split(":".padEnd(2)).map(Number);
-            const [hb, mb] = b.orario.split(":".padEnd(2)).map(Number);
+            const [ha, ma] = a.orario.split(":").map(Number);
+            const [hb, mb] = b.orario.split(":").map(Number);
             return ha * 60 + ma - (hb * 60 + mb);
           });
 
