@@ -302,7 +302,7 @@ const ripristinaOrdine = (id) => {
               <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Riduci">🔽</button>
             </div>
             <div className="p-4 pt-0 space-y-2">
-              <ul className="list-disc list-inside text-xl">
+              <ul className="list-disc list-inside text-xl mb-4">
 
                 {ordine.piatti.map((p, i) => (<li key={i}>{p}</li>))}
               </ul>
