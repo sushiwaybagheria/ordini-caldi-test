@@ -17,6 +17,11 @@ const STAGE_COLORS = {
 
 const trillo = new Audio("/trillo.mp3");
 
+
+
+
+
+
 function calcolaTempoResiduo(dataISO, orarioConsegna) {
   const [hh, mm] = orarioConsegna.split(":").map(Number);
   const dataOrdine = new Date(dataISO);
@@ -30,6 +35,24 @@ function calcolaTempoResiduo(dataISO, orarioConsegna) {
   if (diffMin === 0) return "Consegna ora";
   return `In ritardo di ${Math.abs(diffMin)} min`;
 }
+
+
+function staPerScadere(dataISO, orarioConsegna) {
+  const [hh, mm] = orarioConsegna.split(":").map(Number);
+  const dataOrdine = new Date(dataISO);
+  dataOrdine.setHours(hh, mm, 0, 0);
+
+  const adesso = new Date();
+  const diffMin = Math.round((dataOrdine - adesso) / 60000);
+
+  return diffMin <= 10 && diffMin >= 0;
+}
+
+
+
+
+
+
 
 export default function OrdiniCaldi() {
   const [ordini, setOrdini] = useState([]);
@@ -216,7 +239,20 @@ const aggiornaStato = (id, nuovoStato) => {
       {/* POST-IT ATTIVI */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         {ordini.filter(o => !o.ridotto && !o.completato && !o.archiviato).map(ordine => (
-          <div key={ordine.id} className={`shadow-xl rounded-xl ${STAGE_COLORS[ordine.stato] || "bg-white/30"} transition-all`}>
+          
+
+
+<div 
+  key={ordine.id} 
+  className={`shadow-xl rounded-xl ${STAGE_COLORS[ordine.stato] || "bg-white/30"} transition-all
+    ${staPerScadere(ordine.data, ordine.orario) ? "border-4 border-yellow-400" : ""}`}>
+
+
+
+
+
+
+
             <div className="flex justify-between items-start p-2">
               <div className="font-bold text-sm">
                 #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
