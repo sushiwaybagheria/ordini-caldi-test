@@ -299,19 +299,27 @@ const ripristinaOrdine = (id) => {
 
 
 
-// START intestazione ordine con nome cliente
+  {/* START intestazione ordine con nome cliente */}
 <div className="font-bold text-3xl">
   #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
   <div className="text-xs text-gray-300 truncate">{ordine.cliente}</div>
 </div>
-// END intestazione ordine con nome cliente
+  {/* end intestazione ordine con nome cliente */}
 
 
 
 
 
+  {/* div si o no */}
 
               </div>
+
+  {/* div si o no */}
+
+
+
+
+
               <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Riduci">🔽</button>
             </div>
             <div className="p-4 pt-0 space-y-2">
@@ -342,11 +350,11 @@ const ripristinaOrdine = (id) => {
               </div>
 
 
-// START tempo residuo in basso a destra
+{/* START tempo residuo in basso a destra */}
 <div className="text-[11px] text-right text-gray-400 w-full pr-1">
   {calcolaTempoResiduo(ordine.data, ordine.orario)}
 </div>
-// END tempo residuo in basso a destra
+{/* end tempo residuo in basso a destra */}
 
 
             </div>
