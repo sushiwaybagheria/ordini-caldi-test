@@ -106,7 +106,9 @@ useEffect(() => {
               stato: stato.stato || o.stato || "CONFERMATO",
               ridotto: stato.ridotto || false,
               completato: stato.completato || false,
-              archiviato: stato.archiviato || false
+              archiviato: stato.archiviato || false,
+note: stato.note || ""
+
             };
           })
       );
@@ -164,13 +166,20 @@ useEffect(() => {
 
   const salvaStatoOrdine = async (ordine) => {
     const ref = doc(db, "ordini", ordine.id.toString());
-    await setDoc(ref, {
-      stato: ordine.stato,
-      ridotto: ordine.ridotto,
-      completato: ordine.completato,
-      archiviato: ordine.archiviato || false
-    });
-  };
+
+
+
+
+   // START salvataggio stato ordine con campo note
+await setDoc(ref, {
+  stato: ordine.stato,
+  ridotto: ordine.ridotto,
+  completato: ordine.completato,
+  archiviato: ordine.archiviato || false,
+  note: ordine.note || ""
+});
+// END salvataggio stato ordine con campo note
+
 
 
 
@@ -205,6 +214,29 @@ const aggiornaStato = (id, nuovoStato) => {
     );
   };
 
+
+
+// START funzione aggiornaNota
+const aggiornaNota = (id, nuovaNota) => {
+  setOrdini(prev =>
+    prev.map(o =>
+      o.id === id
+        ? (salvaStatoOrdine({ ...o, note: nuovaNota }), { ...o, note: nuovaNota })
+        : o
+    )
+  );
+};
+// END funzione aggiornaNota
+
+
+
+
+
+
+
+
+
+
   const segnaCompletato = (id) => {
     setOrdini(prev =>
       prev.map(o =>
@@ -226,7 +258,12 @@ const aggiornaStato = (id, nuovoStato) => {
     setConfermaCancellazione(false);
   };
 
-  const ripristinaOrdine = (id) => {
+  
+
+
+
+
+const ripristinaOrdine = (id) => {
     setOrdini(prev =>
       prev.map(o =>
         o.id === id ? (salvaStatoOrdine({ ...o, completato: false, ridotto: false, archiviato: false }), { ...o, completato: false, ridotto: false, archiviato: false }) : o
@@ -269,6 +306,20 @@ const aggiornaStato = (id, nuovoStato) => {
 
                 {ordine.piatti.map((p, i) => (<li key={i}>{p}</li>))}
               </ul>
+
+
+// START campo note ordine
+<textarea
+  className="w-full p-2 text-sm bg-white rounded border mt-2"
+  rows={2}
+  placeholder="Note ordine..."
+  value={ordine.note}
+  onChange={(e) => aggiornaNota(ordine.id, e.target.value)}
+></textarea>
+// END campo note ordine
+
+
+
               <div className="flex justify-between pt-2 gap-1 flex-wrap">
                 <button onClick={() => aggiornaStato(ordine.id, "CONFERMATO")} className="p-2 bg-white border rounded">🥡</button>
                 <button onClick={() => aggiornaStato(ordine.id, "DA PREPARARE")} className="p-2 bg-white border rounded">🔔</button>
