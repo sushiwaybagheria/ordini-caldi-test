@@ -179,7 +179,7 @@ await setDoc(ref, {
   note: ordine.note || ""
 });
 // END salvataggio stato ordine con campo note
-
+};
 
 
 
