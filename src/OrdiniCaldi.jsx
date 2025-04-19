@@ -310,11 +310,7 @@ const ripristinaOrdine = (id) => {
 
 
 
-  {/* div si o no */}
 
-              </div>
-
-  {/* div si o no */}
 
 
 
