@@ -256,7 +256,7 @@ const aggiornaStato = (id, nuovoStato) => {
 
 
             <div className="flex justify-between items-start p-2">
-            <div className="font-bold text-lg">
+            <div className="font-bold text-2xl">
 
 
                 #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
