@@ -308,9 +308,9 @@ const ripristinaOrdine = (id) => {
               </ul>
 
 
- </br>
+
 <textarea
-  className="w-full p-2 text-sm bg-white rounded border mt-2"
+  className="w-full p-2 text-sm bg-white rounded border mt-3 mb-3"
   rows={2}
   placeholder="Note ordine..."
   value={ordine.note}
