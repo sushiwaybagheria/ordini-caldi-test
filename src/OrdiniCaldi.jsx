@@ -1,4 +1,8 @@
 import { useState, useEffect } from "react";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import { app } from "../firebase";
+
+const db = getFirestore(app);
 
 const STAGE_COLORS = {
   CONFERMATO: "bg-white/30",
@@ -8,9 +12,6 @@ const STAGE_COLORS = {
 };
 
 const trillo = new Audio("/trillo.mp3");
-
-
-
 
 function calcolaTempoResiduo(dataISO, orarioConsegna) {
   const [hh, mm] = orarioConsegna.split(":").map(Number);
@@ -25,11 +26,6 @@ function calcolaTempoResiduo(dataISO, orarioConsegna) {
   if (diffMin === 0) return "Consegna ora";
   return `In ritardo di ${Math.abs(diffMin)} min`;
 }
-
-
-
-
-
 
 export default function OrdiniCaldi() {
   const [ordini, setOrdini] = useState([]);
@@ -48,26 +44,33 @@ export default function OrdiniCaldi() {
 
         const format = (d) => d.toISOString().split("T")[0];
 
-        const statiSalvati = JSON.parse(localStorage.getItem("statiOrdini") || "{}");
+        const filtrati = await Promise.all(
+          data
+            .filter(o => {
+              const dataOrdine = new Date(o.data);
+              const dataStr = format(dataOrdine);
+              return dataStr === format(oggi) || dataStr === format(ieri);
+            })
+            .map(async o => {
+              const docRef = doc(db, "ordini", o.id.toString());
+              const snap = await getDoc(docRef);
+              const stato = snap.exists() ? snap.data() : {};
+              return {
+                ...o,
+                piatti: Array.isArray(o.piatti) ? o.piatti : JSON.parse(o.piatti),
+                stato: stato.stato || o.stato || "CONFERMATO",
+                ridotto: stato.ridotto || false,
+                completato: stato.completato || false,
+                archiviato: stato.archiviato || false
+              };
+            })
+        );
 
-        const filtrati = data
-          .filter(o => {
-            const dataOrdine = new Date(o.data);
-            const dataStr = format(dataOrdine);
-            return dataStr === format(oggi) || dataStr === format(ieri);
-          })
-          .map(o => ({
-            ...o,
-            piatti: Array.isArray(o.piatti) ? o.piatti : JSON.parse(o.piatti),
-            ridotto: statiSalvati[o.id]?.ridotto || false,
-            completato: statiSalvati[o.id]?.completato || false,
-            archiviato: statiSalvati[o.id]?.archiviato || false
-          }))
-          .sort((a, b) => {
-            const [ha, ma] = a.orario.split(":").map(Number);
-            const [hb, mb] = b.orario.split(":").map(Number);
-            return ha * 60 + ma - (hb * 60 + mb);
-          });
+        filtrati.sort((a, b) => {
+          const [ha, ma] = a.orario.split(":".padEnd(2)).map(Number);
+          const [hb, mb] = b.orario.split(":".padEnd(2)).map(Number);
+          return ha * 60 + ma - (hb * 60 + mb);
+        });
 
         setOrdini(filtrati);
       } catch (err) {
@@ -80,14 +83,14 @@ export default function OrdiniCaldi() {
     return () => clearInterval(interval);
   }, []);
 
-  const salvaStatoOrdine = (ordine) => {
-    const stati = JSON.parse(localStorage.getItem("statiOrdini") || "{}");
-    stati[ordine.id] = {
+  const salvaStatoOrdine = async (ordine) => {
+    const ref = doc(db, "ordini", ordine.id.toString());
+    await setDoc(ref, {
+      stato: ordine.stato,
       ridotto: ordine.ridotto,
       completato: ordine.completato,
       archiviato: ordine.archiviato || false
-    };
-    localStorage.setItem("statiOrdini", JSON.stringify(stati));
+    });
   };
 
   const aggiornaStato = (id, nuovoStato) => {
@@ -129,30 +132,18 @@ export default function OrdiniCaldi() {
       o.completato ? { ...o, archiviato: true } : o
     );
     setOrdini(nuovi);
-
-    const stati = JSON.parse(localStorage.getItem("statiOrdini") || "{}");
-    for (let o of nuovi) {
-      if (o.archiviato) {
-        stati[o.id] = { ...stati[o.id], completato: true, ridotto: true, archiviato: true };
-      }
-    }
-    localStorage.setItem("statiOrdini", JSON.stringify(stati));
+    nuovi.forEach(o => {
+      if (o.archiviato) salvaStatoOrdine(o);
+    });
     setConfermaCancellazione(false);
   };
 
   const ripristinaOrdine = (id) => {
     setOrdini(prev =>
       prev.map(o =>
-        o.id === id ? { ...o, completato: false, ridotto: false, archiviato: false } : o
+        o.id === id ? (salvaStatoOrdine({ ...o, completato: false, ridotto: false, archiviato: false }), { ...o, completato: false, ridotto: false, archiviato: false }) : o
       )
     );
-    const stati = JSON.parse(localStorage.getItem("statiOrdini") || "{}");
-    if (stati[id]) {
-      stati[id].completato = false;
-      stati[id].ridotto = false;
-      stati[id].archiviato = false;
-      localStorage.setItem("statiOrdini", JSON.stringify(stati));
-    }
   };
 
   return (
@@ -167,7 +158,6 @@ export default function OrdiniCaldi() {
               <div className="font-bold text-sm">
                 #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
                 <div className="text-xs text-gray-700">{calcolaTempoResiduo(ordine.data, ordine.orario)}</div>
-
               </div>
               <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Riduci">🔽</button>
             </div>
