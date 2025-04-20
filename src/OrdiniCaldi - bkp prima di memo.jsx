@@ -63,10 +63,7 @@ export default function OrdiniCaldi() {
 
 
 
-// START state memo
-const [memo, setMemo] = useState([]);
-const [nuovoMemo, setNuovoMemo] = useState("");
-// END state memo
+
 
 
 
@@ -129,23 +126,6 @@ note: stato.note || ""
   };
 
   fetchOrdini();
-
-
-// START carica memo da Firebase
-const unsubscribeMemo = onSnapshot(collection(db, "memo"), (snapshot) => {
-  const dati = snapshot.docs.map(doc => ({
-    id: doc.id,
-    testo: doc.data().testo
-  }));
-  setMemo(dati);
-});
-// END carica memo da Firebase
-
-
-
-
-
-
   const interval = setInterval(fetchOrdini, 30000);
 
   // Listener Firebase per aggiornamenti in tempo reale
@@ -172,7 +152,6 @@ const unsubscribeMemo = onSnapshot(collection(db, "memo"), (snapshot) => {
   return () => {
     clearInterval(interval);
     unsubscribe();
- unsubscribeMemo(); // aggiunto
   };
 }, []);
 
@@ -408,69 +387,6 @@ const ripristinaOrdine = (id) => {
                 </span>
                 <button onClick={() => ripristinaOrdine(ordine.id)} className="ml-2 text-xs bg-white px-2 py-1 rounded">↩️</button>
               </div>
-
-
-
-
-
-
-{/* START blocco Memo */}
-<div className="pt-8 border-t border-gray-500 mt-4">
-  <h2 className="text-white text-sm font-semibold mb-2">📌 Memo</h2>
-
-  {/* Form per aggiungere nuovo memo */}
-  <div className="flex gap-2 mb-4">
-    <input
-      type="text"
-      className="flex-1 p-2 rounded border"
-      placeholder="Scrivi un nuovo memo..."
-      value={nuovoMemo}
-      onChange={(e) => setNuovoMemo(e.target.value)}
-    />
-    <button
-      onClick={async () => {
-        if (!nuovoMemo.trim()) return;
-        const ref = doc(collection(db, "memo"));
-        await setDoc(ref, { testo: nuovoMemo });
-        setNuovoMemo("");
-      }}
-      className="px-3 bg-green-500 text-white rounded"
-    >
-      Aggiungi
-    </button>
-  </div>
-
-  {/* Visualizzazione memo salvati */}
-  <div className="flex flex-wrap gap-2">
-    {memo.map(m => (
-      <div
-        key={m.id}
-        className="bg-yellow-200 text-black px-3 py-2 rounded-xl shadow min-w-[200px] relative"
-      >
-        <button
-          onClick={async () => {
-            await setDoc(doc(db, "memo", m.id), {}, { merge: false });
-          }}
-          className="absolute top-0 right-1 text-red-500"
-          title="Elimina"
-        >
-          ✖
-        </button>
-        <p className="text-sm whitespace-pre-wrap">{m.testo}</p>
-      </div>
-    ))}
-  </div>
-</div>
-{/* END blocco Memo */}
-
-
-
-
-
-
-
-
-
             ))}
           </div>
           <div className="mt-4">
