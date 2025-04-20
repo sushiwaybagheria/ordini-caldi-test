@@ -12,27 +12,23 @@ const STAGE_COLORS = {
 const trillo = new Audio("/trillo.mp3");
 
 function calcolaTempoResiduo(dataISO, orarioConsegna) {
-  const [hh, mm] = orarioConsegna.split(":").map(Number);
+  const [hh, mm] = orarioConsegna.split(":" ).map(Number);
   const dataOrdine = new Date(dataISO);
   dataOrdine.setHours(hh, mm, 0, 0);
-
   const adesso = new Date();
   const diffMs = dataOrdine - adesso;
   const diffMin = Math.round(diffMs / 60000);
-
   if (diffMin > 0) return `Consegna tra ${diffMin} min`;
   if (diffMin === 0) return "Consegna ora";
   return `In ritardo di ${Math.abs(diffMin)} min`;
 }
 
 function staPerScadere(dataISO, orarioConsegna) {
-  const [hh, mm] = orarioConsegna.split(":").map(Number);
+  const [hh, mm] = orarioConsegna.split(":" ).map(Number);
   const dataOrdine = new Date(dataISO);
   dataOrdine.setHours(hh, mm, 0, 0);
-
   const adesso = new Date();
   const diffMin = Math.round((dataOrdine - adesso) / 60000);
-
   return diffMin <= 10;
 }
 
@@ -48,15 +44,11 @@ export default function OrdiniCaldi() {
         const endpoint = "https://script.google.com/macros/s/AKfycbyNDg8p5oMOvOH4-v-hesX_AirmxhHH_ow3SXt5Ed3tceIjnox2ABWXo-2rOeUIHTk/exec";
         const res = await fetch(endpoint);
         const data = await res.json();
-
         const oggi = new Date();
         const ieri = new Date();
         ieri.setDate(oggi.getDate() - 1);
-
         const format = (d) => d.toISOString().split("T")[0];
-
         const tuttiGliId = data.map(o => o.id);
-
         const filtrati = await Promise.all(
           data
             .filter(o => {
@@ -79,30 +71,7 @@ export default function OrdiniCaldi() {
               };
             })
         );
-
-        const filtratiId = filtrati.map(o => o.id);
-        const esclusi = tuttiGliId.filter(id => !filtratiId.includes(id));
-        console.warn("Ordini esclusi (non passano il filtro data):", esclusi);
-
-        console.log("Ordini filtrati finali:", filtrati.map(o => ({
-          id: o.id,
-          archiviato: o.archiviato,
-          stato: o.stato,
-          cliente: o.cliente
-        })));
-
         setOrdini(filtrati);
-
-        const attivi = filtrati.filter(o => !o.ridotto && !o.completato && !o.archiviato);
-        console.log("📋 Ordini attivi da mostrare:", attivi.map(o => o.id));
-
-        // DEBUG JSX: stampa post-it in rendering
-        console.log("🧱 Post-it in rendering:", attivi.map(o => ({
-          id: o.id,
-          cliente: o.cliente,
-          stato: o.stato
-        })));
-
       } catch (err) {
         console.error("Errore fetch ordini:", err);
       }
@@ -230,12 +199,43 @@ export default function OrdiniCaldi() {
     <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8">
       <h1 className="text-2xl font-bold text-center text-red-600">ORDINI CALDI</h1>
 
-      {/* ... ordini attivi, dock e completati ... */}
+      {/* POST-IT ATTIVI */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+        {ordini.filter(o => !o.ridotto && !o.completato && !o.archiviato).map(ordine => (
+          <div key={ordine.id} className={`shadow-xl rounded-xl ${STAGE_COLORS[ordine.stato] || "bg-white/30"} transition-all`}>
+            <div className="flex justify-between items-start p-2">
+              <div className="font-bold text-sm">
+                #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
+                <div className="text-xs text-gray-700">{calcolaTempoResiduo(ordine.data, ordine.orario)}</div>
+              </div>
+              <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Riduci">🔽</button>
+            </div>
+            <div className="p-4 pt-0 space-y-2">
+              <ul className="list-disc list-inside text-sm">
+                {ordine.piatti.map((p, i) => (<li key={i}>{p}</li>))}
+              </ul>
+              <textarea
+                className="w-full p-2 text-sm bg-white rounded border mt-2"
+                rows={2}
+                placeholder="Note ordine..."
+                value={ordine.note}
+                onChange={(e) => aggiornaNota(ordine.id, e.target.value)}
+              ></textarea>
+              <div className="flex justify-between pt-2 gap-1 flex-wrap">
+                <button onClick={() => aggiornaStato(ordine.id, "CONFERMATO")} className="p-2 bg-white border rounded">🥡</button>
+                <button onClick={() => aggiornaStato(ordine.id, "DA PREPARARE")} className="p-2 bg-white border rounded">🔔</button>
+                <button onClick={() => aggiornaStato(ordine.id, "IN PREPARAZIONE")} className="p-2 bg-white border rounded">🔥</button>
+                <button onClick={() => aggiornaStato(ordine.id, "PRONTO")} className="p-2 bg-white border rounded">✅</button>
+                <button onClick={() => segnaCompletato(ordine.id)} className="p-2 bg-white border rounded">🗑️</button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
-      {/* START blocco Memo */}
+      {/* MEMO */}
       <div className="pt-8 border-t border-gray-500 mt-4">
         <h2 className="text-white text-sm font-semibold mb-2">📌 Memo</h2>
-
         <div className="flex gap-2 mb-4">
           <input
             type="text"
@@ -256,7 +256,6 @@ export default function OrdiniCaldi() {
             Aggiungi
           </button>
         </div>
-
         <div className="flex flex-wrap gap-2">
           {memo.map(m => (
             <div
@@ -275,7 +274,6 @@ export default function OrdiniCaldi() {
           ))}
         </div>
       </div>
-      {/* END blocco Memo */}
     </div>
   );
 }
