@@ -107,6 +107,22 @@ const fetchOrdini = async () => {
     })));
 
     setOrdini(filtrati);
+
+
+
+
+
+const attivi = filtrati.filter(o => !o.ridotto && !o.completato && !o.archiviato);
+console.log("📋 Ordini attivi da mostrare:", attivi.map(o => o.id));
+
+
+
+
+
+
+
+
+
   } catch (err) {
     console.error("Errore fetch ordini:", err);
   }
