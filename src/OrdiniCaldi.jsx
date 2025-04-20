@@ -414,7 +414,8 @@ const ripristinaOrdine = (id) => {
 
 
 
-{/* START blocco Memo */}
+// START blocco Memo
+
 <div className="pt-8 border-t border-gray-500 mt-4">
   <h2 className="text-white text-sm font-semibold mb-2">📌 Memo</h2>
 
