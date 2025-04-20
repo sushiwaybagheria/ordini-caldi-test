@@ -43,52 +43,97 @@ export default function OrdiniCaldi() {
   const [nuovoMemo, setNuovoMemo] = useState("");
 
   useEffect(() => {
-    const fetchOrdini = async () => {
-      try {
-        const endpoint = "https://script.google.com/macros/s/AKfycbyNDg8p5oMOvOH4-v-hesX_AirmxhHH_ow3SXt5Ed3tceIjnox2ABWXo-2rOeUIHTk/exec";
-        const res = await fetch(endpoint);
-        const data = await res.json();
 
-        const oggi = new Date();
-        const ieri = new Date();
-        ieri.setDate(oggi.getDate() - 1);
 
-        const format = (d) => d.toISOString().split("T")[0];
 
-        const filtrati = await Promise.all(
-          data
-            .filter(o => {
-              const dataOrdine = new Date(o.data);
-              const dataStr = format(dataOrdine);
-              return dataStr === format(oggi) || dataStr === format(ieri);
-            })
-            .map(async o => {
-              const docRef = doc(db, "ordini", o.id.toString());
-              const snap = await getDoc(docRef);
-              const stato = snap.exists() ? snap.data() : {};
-              return {
-                ...o,
-                piatti: Array.isArray(o.piatti) ? o.piatti : JSON.parse(o.piatti),
-                stato: stato.stato || o.stato || "CONFERMATO",
-                ridotto: stato.ridotto || false,
-                completato: stato.completato || false,
-                archiviato: stato.archiviato || false,
-                note: stato.note || ""
-              };
-            })
-        );
 
-        filtrati.sort((a, b) => {
-          const [ha, ma] = a.orario.split(":").map(Number);
-          const [hb, mb] = b.orario.split(":").map(Number);
-          return ha * 60 + ma - (hb * 60 + mb);
-        });
 
-        setOrdini(filtrati);
-      } catch (err) {
-        console.error("Errore fetch ordini:", err);
-      }
-    };
+
+
+
+
+
+
+
+
+
+// START funzione fetchOrdini con debug
+const fetchOrdini = async () => {
+  try {
+    const endpoint = "https://script.google.com/macros/s/AKfycbyNDg8p5oMOvOH4-v-hesX_AirmxhHH_ow3SXt5Ed3tceIjnox2ABWXo-2rOeUIHTk/exec";
+    const res = await fetch(endpoint);
+    const data = await res.json();
+
+    const oggi = new Date();
+    const ieri = new Date();
+    ieri.setDate(oggi.getDate() - 1);
+
+    const format = (d) => d.toISOString().split("T")[0];
+
+    const tuttiGliId = data.map(o => o.id);
+
+    const filtrati = await Promise.all(
+      data
+        .filter(o => {
+          const dataOrdine = new Date(o.data);
+          const dataStr = format(dataOrdine);
+          return dataStr === format(oggi) || dataStr === format(ieri);
+        })
+        .map(async o => {
+          const docRef = doc(db, "ordini", o.id.toString());
+          const snap = await getDoc(docRef);
+          const stato = snap.exists() ? snap.data() : {};
+          return {
+            ...o,
+            piatti: Array.isArray(o.piatti) ? o.piatti : JSON.parse(o.piatti),
+            stato: stato.stato || o.stato || "CONFERMATO",
+            ridotto: stato.ridotto || false,
+            completato: stato.completato || false,
+            archiviato: stato.archiviato || false,
+            note: stato.note || ""
+          };
+        })
+    );
+
+    const filtratiId = filtrati.map(o => o.id);
+    const esclusi = tuttiGliId.filter(id => !filtratiId.includes(id));
+    console.warn("Ordini esclusi (non passano il filtro data):", esclusi);
+
+    console.log("Ordini filtrati finali:", filtrati.map(o => ({
+      id: o.id,
+      archiviato: o.archiviato,
+      stato: o.stato,
+      cliente: o.cliente
+    })));
+
+    setOrdini(filtrati);
+  } catch (err) {
+    console.error("Errore fetch ordini:", err);
+  }
+};
+// END funzione fetchOrdini con debug
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     fetchOrdini();
 
