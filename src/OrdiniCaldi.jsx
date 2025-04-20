@@ -176,7 +176,28 @@ export default function OrdiniCaldi() {
                 <button onClick={() => aggiornaStato(ordine.id, "CONFERMATO")} className="p-2 bg-white border rounded">🥡</button>
                 <button onClick={() => aggiornaStato(ordine.id, "DA PREPARARE")} className="p-2 bg-white border rounded">🔔</button>
                 <button onClick={() => aggiornaStato(ordine.id, "IN PREPARAZIONE")} className="p-2 bg-white border rounded">🔥</button>
-                <button onClick={() => aggiornaStato(ordine.id, "PRONTO")} className="p-2 bg-white border rounded">✅</button>
+               
+
+
+
+
+<button
+  onClick={async () => {
+    await setDoc(doc(db, "memo", m.id), { completato: true }, { merge: true });
+  }}
+  className="absolute bottom-1 right-1 text-green-600 text-lg"
+  title="Segna come completato"
+>
+  ✅
+</button>
+
+
+
+
+
+
+
+
               </div>
               <div className="text-[11px] text-right text-gray-400 w-full pr-1">
                 {calcolaTempoResiduo(ordine.data, ordine.orario)}
