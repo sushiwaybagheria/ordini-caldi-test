@@ -164,7 +164,7 @@ export default function OrdiniCaldi() {
           <div key={ordine.id} className={`shadow-xl rounded-xl ${STAGE_COLORS[ordine.stato]} transition-all ${staPerScadere(ordine.data, ordine.orario) ? "border-4 border-yellow-400" : ""}`}>
             <div className="flex justify-between items-start p-2">
               <div className="font-bold text-3xl">
-                #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🙵️"} {ordine.orario}
+                #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
                 <div className="text-xs text-gray-300 truncate">{ordine.cliente}</div>
               </div>
               <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Riduci">🔽</button>
@@ -202,7 +202,7 @@ export default function OrdiniCaldi() {
             {ordini.filter(o => o.ridotto && !o.completato && !o.archiviato).map(ordine => (
               <div key={ordine.id} className="shadow-md rounded-lg px-3 py-2 flex items-center justify-between min-w-[200px]">
                 <span className="text-sm font-bold truncate">
-                  #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🙵️"} {ordine.orario}
+                  #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
                 </span>
                 <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Espandi">🔼</button>
               </div>
