@@ -88,10 +88,7 @@ export default function OrdiniCaldi() {
     fetchOrdini();
 
     const unsubscribeMemo = onSnapshot(collection(db, "memo"), (snapshot) => {
-      const dati = snapshot.docs.map(doc => ({
-        id: doc.id,
-        testo: doc.data().testo
-      }));
+      const dati = snapshot.docs.map(doc => ({ id: doc.id, testo: doc.data().testo }));
       setMemo(dati);
     });
 
@@ -101,13 +98,12 @@ export default function OrdiniCaldi() {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "modified") {
           const ordineAggiornato = change.doc.data();
-          setOrdini(prev =>
-            prev.map(o => o.id.toString() === change.doc.id
+          setOrdini(prev => prev.map(o =>
+            o.id.toString() === change.doc.id
               ? (o.stato !== "DA PREPARARE" && ordineAggiornato.stato === "DA PREPARARE" ? trillo.play() : null,
                 { ...o, ...ordineAggiornato })
               : o
-            )
-          );
+          ));
         }
       });
     });
@@ -131,38 +127,27 @@ export default function OrdiniCaldi() {
   };
 
   const aggiornaStato = (id, nuovoStato) => {
-    setOrdini(prev =>
-      prev.map(o =>
-        o.id === id
-          ? (salvaStatoOrdine({ ...o, stato: nuovoStato, completato: nuovoStato === "PRONTO" }),
-            { ...o, stato: nuovoStato, completato: nuovoStato === "PRONTO" })
-          : o
-      )
-    );
+    setOrdini(prev => prev.map(o =>
+      o.id === id ? (salvaStatoOrdine({ ...o, stato: nuovoStato, completato: nuovoStato === "PRONTO" }), { ...o, stato: nuovoStato, completato: nuovoStato === "PRONTO" }) : o
+    ));
     if (nuovoStato === "DA PREPARARE") trillo.play();
   };
 
   const aggiornaNota = (id, nuovaNota) => {
-    setOrdini(prev =>
-      prev.map(o =>
-        o.id === id
-          ? (salvaStatoOrdine({ ...o, note: nuovaNota }), { ...o, note: nuovaNota })
-          : o
-      )
-    );
+    setOrdini(prev => prev.map(o =>
+      o.id === id ? (salvaStatoOrdine({ ...o, note: nuovaNota }), { ...o, note: nuovaNota }) : o
+    ));
   };
 
   const toggleRidotto = (id) => {
-    setOrdini(prev =>
-      prev.map(o => {
-        if (o.id === id) {
-          const aggiornato = { ...o, ridotto: !o.ridotto };
-          salvaStatoOrdine(aggiornato);
-          return aggiornato;
-        }
-        return o;
-      })
-    );
+    setOrdini(prev => prev.map(o => {
+      if (o.id === id) {
+        const aggiornato = { ...o, ridotto: !o.ridotto };
+        salvaStatoOrdine(aggiornato);
+        return aggiornato;
+      }
+      return o;
+    }));
   };
 
   const eliminaMemo = async (id) => {
@@ -173,12 +158,13 @@ export default function OrdiniCaldi() {
     <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8">
       <h1 className="text-2xl font-bold text-center text-red-600">ORDINI CALDI</h1>
 
+      {/* ORDINI ATTIVI */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         {ordini.filter(o => !o.ridotto && !o.completato && !o.archiviato).map(ordine => (
           <div key={ordine.id} className={`shadow-xl rounded-xl ${STAGE_COLORS[ordine.stato]} transition-all ${staPerScadere(ordine.data, ordine.orario) ? "border-4 border-yellow-400" : ""}`}>
             <div className="flex justify-between items-start p-2">
               <div className="font-bold text-3xl">
-                #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
+                #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🙵️"} {ordine.orario}
                 <div className="text-xs text-gray-300 truncate">{ordine.cliente}</div>
               </div>
               <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Riduci">🔽</button>
@@ -208,24 +194,25 @@ export default function OrdiniCaldi() {
         ))}
       </div>
 
-      {/* START Dock completati */}
-      {ordini.some(o => o.completato && !o.archiviato) && (
+      {/* DOCK RIDOTTI */}
+      {ordini.some(o => o.ridotto && !o.completato && !o.archiviato) && (
         <div className="pt-4 border-t border-gray-500">
-          <h2 className="text-white text-sm font-semibold mb-2">✅ Ordini completati:</h2>
+          <h2 className="text-white text-sm font-semibold mb-2">Dock (ordini minimizzati):</h2>
           <div className="flex flex-wrap gap-2">
-            {ordini.filter(o => o.completato && !o.archiviato).map(ordine => (
-              <div key={ordine.id} className="shadow-md rounded-lg px-3 py-2 flex items-center justify-between min-w-[200px] bg-green-300">
+            {ordini.filter(o => o.ridotto && !o.completato && !o.archiviato).map(ordine => (
+              <div key={ordine.id} className="shadow-md rounded-lg px-3 py-2 flex items-center justify-between min-w-[200px]">
                 <span className="text-sm font-bold truncate">
-                  #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
+                  #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🙵️"} {ordine.orario}
                 </span>
+                <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Espandi">🔼</button>
               </div>
             ))}
           </div>
         </div>
       )}
-      {/* END Dock completati */}
 
-      <div className="pt-4 border-t border-gray-500">
+      {/* MEMO */}
+      <div className="pt-8 border-t border-gray-500">
         <h2 className="text-white text-sm font-semibold mb-2">📌 Memo</h2>
         <div className="flex gap-2 mb-4">
           <input
@@ -250,11 +237,7 @@ export default function OrdiniCaldi() {
         <div className="flex flex-wrap gap-2">
           {memo.map(m => (
             <div key={m.id} className="bg-yellow-200 text-black px-3 py-2 rounded-xl shadow min-w-[200px] relative">
-              <button
-                onClick={() => eliminaMemo(m.id)}
-                className="absolute top-0 right-1 text-red-500"
-                title="Elimina"
-              >✖</button>
+              <button onClick={() => eliminaMemo(m.id)} className="absolute top-0 right-1 text-red-500" title="Elimina">✖</button>
               <p className="text-sm whitespace-pre-wrap">{m.testo}</p>
             </div>
           ))}
