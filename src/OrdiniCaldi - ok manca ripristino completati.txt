@@ -150,26 +150,6 @@ export default function OrdiniCaldi() {
     }));
   };
 
-
-
-const ripristinaOrdine = (id) => {
-  setOrdini(prev =>
-    prev.map(o =>
-      o.id === id
-        ? (salvaStatoOrdine({ ...o, completato: false, ridotto: false, archiviato: false }), { ...o, completato: false, ridotto: false, archiviato: false })
-        : o
-    )
-  );
-};
-
-
-
-
-
-
-
-
-
   const eliminaMemo = async (id) => {
     await deleteDoc(doc(db, "memo", id));
   };
