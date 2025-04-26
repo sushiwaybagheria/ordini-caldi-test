@@ -208,6 +208,23 @@ export default function OrdiniCaldi() {
         ))}
       </div>
 
+      {/* START Dock completati */}
+      {ordini.some(o => o.completato && !o.archiviato) && (
+        <div className="pt-4 border-t border-gray-500">
+          <h2 className="text-white text-sm font-semibold mb-2">✅ Ordini completati:</h2>
+          <div className="flex flex-wrap gap-2">
+            {ordini.filter(o => o.completato && !o.archiviato).map(ordine => (
+              <div key={ordine.id} className="shadow-md rounded-lg px-3 py-2 flex items-center justify-between min-w-[200px] bg-green-300">
+                <span className="text-sm font-bold truncate">
+                  #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {/* END Dock completati */}
+
       <div className="pt-4 border-t border-gray-500">
         <h2 className="text-white text-sm font-semibold mb-2">📌 Memo</h2>
         <div className="flex gap-2 mb-4">
