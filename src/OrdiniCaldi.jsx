@@ -194,22 +194,6 @@ export default function OrdiniCaldi() {
         ))}
       </div>
 
-      {/* DOCK RIDOTTI */}
-      {ordini.some(o => o.ridotto && !o.completato && !o.archiviato) && (
-        <div className="pt-4 border-t border-gray-500">
-          <h2 className="text-white text-sm font-semibold mb-2">Dock (ordini minimizzati):</h2>
-          <div className="flex flex-wrap gap-2">
-            {ordini.filter(o => o.ridotto && !o.completato && !o.archiviato).map(ordine => (
-              <div key={ordine.id} className="shadow-md rounded-lg px-3 py-2 flex items-center justify-between min-w-[200px]">
-                <span className="text-sm font-bold truncate">
-                  #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
-                </span>
-                <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Espandi">🔼</button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
 
 
@@ -220,43 +204,85 @@ export default function OrdiniCaldi() {
 
 
 
-{/* DOCK COMPLETATI */}
-{ordini.some(o => o.completato && !o.archiviato) && (
+
+
+{/* DOCK RIDOTTI */}
+{ordini.some(o => o.ridotto && !o.completato && !o.archiviato) && (
   <div className="pt-4 border-t border-gray-500">
-    <h2 className="text-white text-sm font-semibold mb-2">Ordini Completati:</h2>
+    <h2 className="text-white text-sm font-semibold mb-2">Dock (ordini minimizzati):</h2>
     <div className="flex flex-wrap gap-2">
-      {ordini.filter(o => o.completato && !o.archiviato).map(ordine => (
-        <div key={ordine.id} className="shadow-md rounded-lg px-3 py-2 flex items-center justify-between min-w-[200px]">
+      {ordini.filter(o => o.ridotto && !o.completato && !o.archiviato).map(ordine => (
+        <div key={ordine.id} className={`shadow-md rounded-lg px-3 py-2 flex items-center justify-between min-w-[200px] ${STAGE_COLORS[ordine.stato] || "bg-white/30"}`}>
           <span className="text-sm font-bold truncate">
             #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
           </span>
-
-      <button onClick={() => ripristinaOrdine(ordine.id)} className="ml-2 text-xs bg-white px-2 py-1 rounded">↩️</button>
-
-
-
-
-          {/* Puoi aggiungere un pulsante per archiviare o altre azioni se necessario */}
+          <button onClick={() => toggleRidotto(ordine.id)} className="text-lg" title="Espandi">🔼</button>
         </div>
       ))}
-
-
-
-          </div>
+    </div>
   </div>
+)}
 
+{/* DOCK COMPLETATI */}
+{ordini.some(o => o.completato && !o.archiviato) && (
+  <div className="pt-6 border-t border-gray-500">
+    <h2 className="text-white text-sm font-semibold mb-2">Ordini completati:</h2>
+    <div className="flex flex-wrap gap-2">
+      {ordini.filter(o => o.completato && !o.archiviato).map(ordine => (
+        <div key={ordine.id} className="shadow-md rounded-lg px-3 py-2 flex items-center justify-between min-w-[200px] bg-green-300">
+          <span className="text-sm font-bold truncate">
+            #{ordine.id} {ordine.tipo === "RITIRO" ? "📦" : "🛵"} {ordine.orario}
+          </span>
+          <button onClick={() => ripristinaOrdine(ordine.id)} className="ml-2 text-xs bg-white px-2 py-1 rounded">↩️</button>
+        </div>
+      ))}
+    </div>
 
-          <div className="mt-4">
-            {!confermaCancellazione ? (
-              <button onClick={() => setConfermaCancellazione(true)} className="px-4 py-2 bg-red-500 text-white rounded">Cancella tutto</button>
-            ) : (
-              <div className="space-x-2">
-                <span className="text-white">Sei sicuro?</span>
-                <button onClick={cancellaCompletati} className="px-3 py-1 bg-red-600 text-white rounded">Cancella</button>
-                <button onClick={() => setConfermaCancellazione(false)} className="px-3 py-1 bg-gray-300 rounded">Annulla</button>
-              </div>
-            )}
+    <div className="mt-4">
+      {!confermaCancellazione ? (
+        <button onClick={() => setConfermaCancellazione(true)} className="px-4 py-2 bg-red-500 text-white rounded">Cancella tutto</button>
+      ) : (
+        <div className="space-x-2">
+          <span className="text-white">Sei sicuro?</span>
+          <button onClick={cancellaCompletati} className="px-3 py-1 bg-red-600 text-white rounded">Cancella</button>
+          <button onClick={() => setConfermaCancellazione(false)} className="px-3 py-1 bg-gray-300 rounded">Annulla</button>
+        </div>
+      )}
+    </div>
+  </div>
+)}
 
+{/* MEMO */}
+<div className="pt-8 border-t border-gray-500">
+  <h2 className="text-white text-sm font-semibold mb-2">📌 Memo</h2>
+  <div className="flex gap-2 mb-4">
+    <input
+      type="text"
+      className="flex-1 p-2 rounded border"
+      placeholder="Scrivi un nuovo memo..."
+      value={nuovoMemo}
+      onChange={(e) => setNuovoMemo(e.target.value)}
+    />
+    <button
+      onClick={async () => {
+        if (!nuovoMemo.trim()) return;
+        const ref = doc(collection(db, "memo"));
+        await setDoc(ref, { testo: nuovoMemo });
+        setNuovoMemo("");
+      }}
+      className="px-3 bg-green-500 text-white rounded"
+    >
+      Aggiungi
+    </button>
+  </div>
+  <div className="flex flex-wrap gap-2">
+    {memo.map(m => (
+      <div key={m.id} className="bg-yellow-200 text-black px-3 py-2 rounded-xl shadow min-w-[200px] relative">
+        <button onClick={() => eliminaMemo(m.id)} className="absolute top-0 right-1 text-red-500" title="Elimina">✖</button>
+        <p className="text-sm whitespace-pre-wrap">{m.testo}</p>
+      </div>
+    ))}
+  </div>
 </div>
 
 
@@ -264,47 +290,6 @@ export default function OrdiniCaldi() {
 
 
 
-
-
-
-
-
-
-
-
-
-      {/* MEMO */}
-      <div className="pt-8 border-t border-gray-500">
-        <h2 className="text-white text-sm font-semibold mb-2">📌 Memo</h2>
-        <div className="flex gap-2 mb-4">
-          <input
-            type="text"
-            className="flex-1 p-2 rounded border"
-            placeholder="Scrivi un nuovo memo..."
-            value={nuovoMemo}
-            onChange={(e) => setNuovoMemo(e.target.value)}
-          />
-          <button
-            onClick={async () => {
-              if (!nuovoMemo.trim()) return;
-              const ref = doc(collection(db, "memo"));
-              await setDoc(ref, { testo: nuovoMemo });
-              setNuovoMemo("");
-            }}
-            className="px-3 bg-green-500 text-white rounded"
-          >
-            Aggiungi
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {memo.map(m => (
-            <div key={m.id} className="bg-yellow-200 text-black px-3 py-2 rounded-xl shadow min-w-[200px] relative">
-              <button onClick={() => eliminaMemo(m.id)} className="absolute top-0 right-1 text-red-500" title="Elimina">✖</button>
-              <p className="text-sm whitespace-pre-wrap">{m.testo}</p>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
