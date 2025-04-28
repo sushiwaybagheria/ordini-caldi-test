@@ -206,8 +206,29 @@ const ripristinaOrdine = (id) => {
 
 
   const eliminaMemo = async (id) => {
-    await deleteDoc(doc(db, "memo", id));
-  };
+  // 🔥 1. Prima recupera il memo da cancellare
+  const memoDaCancellare = memo.find(m => m.id === id);
+
+  if (memoDaCancellare) {
+    // 🔥 2. Scrivi nel log prima di cancellarlo
+    const logRef = doc(collection(db, "log_memo"));
+    await setDoc(logRef, {
+      testo: memoDaCancellare.testo,
+      azione: "cancellato",
+      timestamp: Date.now(),
+      idMemo: id
+    });
+  }
+
+  // 🔥 3. Ora cancella il memo
+  await deleteDoc(doc(db, "memo", id));
+};
+
+
+
+
+
+
 
   return (
 <>
@@ -388,23 +409,41 @@ const ripristinaOrdine = (id) => {
       onChange={(e) => setNuovoMemo(e.target.value)}
     />
     <button
-      onClick={async () => {
-        if (!nuovoMemo.trim()) return;
-        const ref = doc(collection(db, "memo"));
-
-
-
-      await setDoc(ref, { 
-  testo: nuovoMemo, 
-  timestamp: Date.now()  // 👈 aggiungiamo il timestamp
-});
 
 
 
 
 
-        setNuovoMemo("");
-      }}
+
+
+    onClick={async () => {
+  if (!nuovoMemo.trim()) return;
+
+  // 🔥 1. Salva il memo normale
+  const ref = doc(collection(db, "memo"));
+  await setDoc(ref, { 
+    testo: nuovoMemo, 
+    timestamp: Date.now()
+  });
+
+  // 🔥 2. Scrivi anche nel log
+  const logRef = doc(collection(db, "log_memo"));
+  await setDoc(logRef, {
+    testo: nuovoMemo,
+    azione: "creato",
+    timestamp: Date.now()
+  });
+
+  setNuovoMemo("");
+}}
+
+
+
+
+
+
+
+
       className="px-3 bg-green-500 text-white rounded"
     >
       Aggiungi
