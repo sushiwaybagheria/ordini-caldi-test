@@ -1,19 +1,36 @@
 import { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, limit } from "firebase/firestore";
 import { db } from "./firebase";
 
 export default function Storico() {
   const [logMemo, setLogMemo] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "log_memo"), (snapshot) => {
-      const dati = snapshot.docs.map(doc => doc.data());
-      
-      // Ordina dal più recente
-      dati.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-      
-      setLogMemo(dati);
-    });
+  
+
+
+
+
+const q = query(
+  collection(db, "log_memo"),
+  orderBy("timestamp", "desc"),
+  limit(100)
+);
+
+const unsubscribe = onSnapshot(q, (snapshot) => {
+  const dati = snapshot.docs.map(doc => doc.data());
+  setLogMemo(dati);
+});
+
+
+
+
+
+
+
+
+
+
 
     return () => unsubscribe();
   }, []);
