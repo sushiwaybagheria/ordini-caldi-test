@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import { doc, setDoc, getDoc, collection, onSnapshot, deleteDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
+
+
+
+
+
 const STAGE_COLORS = {
   CONFERMATO: "bg-white/30",
   "DA PREPARARE": "bg-yellow-300",
@@ -278,6 +283,20 @@ const ripristinaOrdine = (id) => {
 {/* MEMO */}
 <div className="pt-8 border-t border-gray-500">
   <h2 className="text-white text-sm font-semibold mb-2">📌 Memo</h2>
+
+
+  {/* 🔔 Campanella per Trillo */}
+  <button
+    onClick={() => trillo.play()}
+    className="mb-3 bg-yellow-400 text-black px-3 py-1 rounded-full shadow inline-flex items-center gap-1"
+  >
+    🔔 Trillo
+  </button>
+  {/* Fine Campanella */}
+
+
+
+
   <div className="flex gap-2 mb-4">
     <input
       type="text"
