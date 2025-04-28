@@ -181,6 +181,17 @@ const ripristinaOrdine = (id) => {
 
   return (
     <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8">
+
+  {/* 🔔 Campanella per Trillo */}
+  <button
+    onClick={() => trillo.play()}
+    className="mb-3 bg-white-400 text-black px-3 py-1 rounded-full shadow inline-flex items-center gap-1"
+  >
+    🔔
+  </button>
+  {/* Fine Campanella */}
+
+
       <h1 className="text-2xl font-bold text-center text-red-600">ORDINI CALDI</h1>
 
       {/* ORDINI ATTIVI */}
@@ -285,14 +296,7 @@ const ripristinaOrdine = (id) => {
   <h2 className="text-white text-sm font-semibold mb-2">📌 Memo</h2>
 
 
-  {/* 🔔 Campanella per Trillo */}
-  <button
-    onClick={() => trillo.play()}
-    className="mb-3 bg-yellow-400 text-black px-3 py-1 rounded-full shadow inline-flex items-center gap-1"
-  >
-    🔔 Trillo
-  </button>
-  {/* Fine Campanella */}
+
 
 
 
