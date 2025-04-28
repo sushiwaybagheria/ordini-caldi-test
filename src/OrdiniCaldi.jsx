@@ -3,6 +3,12 @@ import { doc, setDoc, getDoc, collection, onSnapshot, deleteDoc } from "firebase
 import { db } from "./firebase";
 
 
+// 🔔 Listener Firebase per trillo sincronizzato
+const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
+  if (snap.exists()) {
+    trillo.play();
+  }
+});
 
 
 
@@ -117,6 +123,7 @@ export default function OrdiniCaldi() {
       clearInterval(interval);
       unsubscribe();
       unsubscribeMemo();
+ unsubTrillo();  // 👈 aggiunto questo
     };
   }, []);
 
@@ -185,18 +192,41 @@ const ripristinaOrdine = (id) => {
 
 
 
+
+
+
+
+
+
   {/* 🔔 Campanella per Trillo */}
-  <button
-    onClick={() => trillo.play()}
-    className="text-2xl font-bold text-center text-red-600"
+      
+
+<button
+  onClick={async () => {
+    const ref = doc(db, "trillo", "campanella");
+    await setDoc(ref, { timestamp: Date.now() });
+  }}
+ className="text-2xl font-bold text-center text-red-600"
 
   >
     🔔 ORDINI CALDI
   </button>
+
+
   {/* Fine Campanella */}
 
 
-      
+
+
+
+
+
+
+
+
+
+
+
 
       {/* ORDINI ATTIVI */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
