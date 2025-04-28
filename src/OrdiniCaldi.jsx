@@ -110,7 +110,7 @@ const dati = snapshot.docs.map(doc => ({
 dati.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
 setMemo(dati);
-
+}); 
 
 
 
