@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<OrdiniCaldi />} />
-        <Route path="/storico" element={<Storico />} />
+        <Route path="/Storico" element={<Storico />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
