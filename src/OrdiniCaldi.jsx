@@ -252,7 +252,16 @@ const ripristinaOrdine = (id) => {
 
 
 
-    <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8">
+<div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8 relative">
+  
+  {/* 🔥 Pulsante Log */}
+  <a
+    href="/storico"
+    className="text-gray-500 text-xs hover:text-white absolute top-2 right-2"
+    title="Vai allo storico memo"
+  >
+    📜 Log
+  </a>
 
 
 
@@ -478,32 +487,19 @@ const ripristinaOrdine = (id) => {
       } else if (format(dataMemo) === format(ieri)) {
         return `Ieri alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })}`;
       } else {
-        return `${dataMemo.toLocaleDateString("it-IT")} alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })}`;
-      }
-    })()}
+         return `${dataMemo.toLocaleDateString("it-IT")} alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })}`;
+                }
+              })()}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
   </div>
-)}
 
+</div> {/* 👈 QUI chiude il div p-4 min-h-screen */}
 
-
-
-
-
-
-
-
-
-      </div>
-    ))}
-  </div>
-</div>
-
-
-
-
-
-
-     </div>
-  </>
-  );
+</>
+);
 }
+
