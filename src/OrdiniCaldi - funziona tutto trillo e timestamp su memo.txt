@@ -3,7 +3,12 @@ import { doc, setDoc, getDoc, collection, onSnapshot, deleteDoc } from "firebase
 import { db } from "./firebase";
 
 
-
+// 🔔 Listener Firebase per trillo sincronizzato
+const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
+  if (snap.exists()) {
+    trillo.play();
+  }
+});
 
 
 
@@ -95,15 +100,27 @@ export default function OrdiniCaldi() {
 
     const unsubscribeMemo = onSnapshot(collection(db, "memo"), (snapshot) => {
 
+
+
+
+
+
+
 const dati = snapshot.docs.map(doc => ({
   id: doc.id,
   testo: doc.data().testo,
   timestamp: doc.data().timestamp
 }));
 
+
+
+
+
+
+
+
       setMemo(dati);
     });
-
 
     const interval = setInterval(fetchOrdini, 30000);
 
@@ -120,15 +137,6 @@ const dati = snapshot.docs.map(doc => ({
         }
       });
     });
-
-
-const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
-  if (snap.exists()) {
-    trillo.play();
-  }
-});
-
-
 
     return () => {
       clearInterval(interval);
