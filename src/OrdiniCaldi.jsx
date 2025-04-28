@@ -464,6 +464,7 @@ const ripristinaOrdine = (id) => {
 
 
 
-    </div>
+     </div>
+  </>
   );
 }
