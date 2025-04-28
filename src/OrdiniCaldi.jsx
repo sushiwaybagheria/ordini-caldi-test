@@ -182,17 +182,27 @@ const ripristinaOrdine = (id) => {
   return (
     <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8">
 
+
+
+
   {/* 🔔 Campanella per Trillo */}
   <button
     onClick={() => trillo.play()}
-    className="mb-3 bg-white-400 text-black px-3 py-1 rounded-full shadow inline-flex items-center gap-1"
+    className="text-2xl font-bold text-center text-red-600"
+
   >
-    🔔
+    🔔 ORDINI CALDI
   </button>
   {/* Fine Campanella */}
 
 
       <h1 className="text-2xl font-bold text-center text-red-600">ORDINI CALDI</h1>
+
+
+
+
+
+
 
       {/* ORDINI ATTIVI */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
