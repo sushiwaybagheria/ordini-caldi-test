@@ -354,31 +354,43 @@ const ripristinaOrdine = (id) => {
 
 
   <div className="flex gap-2 mb-4">
+
+
+
+
     <input
       type="text"
       className="flex-1 p-2 rounded border"
       placeholder="Scrivi un nuovo memo..."
       value={nuovoMemo}
       onChange={(e) => setNuovoMemo(e.target.value)}
-    />
-    <button
-      onClick={async () => {
-        if (!nuovoMemo.trim()) return;
-        const ref = doc(collection(db, "memo"));
-
-       await setDoc(ref, { 
-  testo: nuovoMemo, 
-  timestamp: Date.now()  // 👈 aggiungiamo il timestamp
-});
+onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      aggiungiMemo();
+    }
+  }}
+/>    
 
 
 
-        setNuovoMemo("");
-      }}
-      className="px-3 bg-green-500 text-white rounded"
-    >
-      Aggiungi
-    </button>
+
+
+
+
+<button
+  onClick={aggiungiMemo}
+  className="px-3 bg-green-500 text-white rounded"
+>
+  Aggiungi
+</button>
+
+
+
+
+
+
+
   </div>
   <div className="flex flex-wrap gap-2">
     {memo.map(m => (
