@@ -99,7 +99,26 @@ export default function OrdiniCaldi() {
     fetchOrdini();
 
     const unsubscribeMemo = onSnapshot(collection(db, "memo"), (snapshot) => {
-      const dati = snapshot.docs.map(doc => ({ id: doc.id, testo: doc.data().testo }));
+
+
+
+
+
+
+
+const dati = snapshot.docs.map(doc => ({
+  id: doc.id,
+  testo: doc.data().testo,
+  timestamp: doc.data().timestamp
+}));
+
+
+
+
+
+
+
+
       setMemo(dati);
     });
 
@@ -347,7 +366,18 @@ const ripristinaOrdine = (id) => {
       onClick={async () => {
         if (!nuovoMemo.trim()) return;
         const ref = doc(collection(db, "memo"));
-        await setDoc(ref, { testo: nuovoMemo });
+
+
+
+      await setDoc(ref, { 
+  testo: nuovoMemo, 
+  timestamp: Date.now()  // 👈 aggiungiamo il timestamp
+});
+
+
+
+
+
         setNuovoMemo("");
       }}
       className="px-3 bg-green-500 text-white rounded"
@@ -359,7 +389,26 @@ const ripristinaOrdine = (id) => {
     {memo.map(m => (
       <div key={m.id} className="bg-yellow-200 text-black px-3 py-2 rounded-xl shadow min-w-[200px] relative">
         <button onClick={() => eliminaMemo(m.id)} className="absolute top-0 right-1 text-red-500" title="Elimina">✖</button>
-        <p className="text-sm whitespace-pre-wrap">{m.testo}</p>
+
+
+
+
+
+<p className="text-sm whitespace-pre-wrap">{m.testo}</p>
+{m.timestamp && (
+  <div className="text-[10px] text-gray-600 mt-1">
+    {new Date(m.timestamp).toLocaleString("it-IT", { hour: '2-digit', minute: '2-digit' })}
+  </div>
+)}
+
+
+
+
+
+
+
+
+
       </div>
     ))}
   </div>
