@@ -95,14 +95,26 @@ export default function OrdiniCaldi() {
 
     const unsubscribeMemo = onSnapshot(collection(db, "memo"), (snapshot) => {
 
+
+
+
+
+
 const dati = snapshot.docs.map(doc => ({
   id: doc.id,
   testo: doc.data().testo,
   timestamp: doc.data().timestamp
 }));
 
-      setMemo(dati);
-    });
+// Riordina dal più recente al più vecchio
+dati.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+setMemo(dati);
+
+
+
+
+
 
 
     const interval = setInterval(fetchOrdini, 30000);
@@ -198,6 +210,27 @@ const ripristinaOrdine = (id) => {
   };
 
   return (
+<>
+  <style>
+    {`
+      @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .fade-in {
+        animation: fadeIn 0.4s ease-out;
+      }
+    `}
+  </style>
+
+
+
+
+
+
+
+
+
     <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8">
 
 
@@ -387,11 +420,31 @@ const ripristinaOrdine = (id) => {
 
 
 <p className="text-sm whitespace-pre-wrap">{m.testo}</p>
+
+
+
+
 {m.timestamp && (
   <div className="text-[10px] text-gray-600 mt-1">
-    {new Date(m.timestamp).toLocaleString("it-IT", { hour: '2-digit', minute: '2-digit' })}
+    {(() => {
+      const dataMemo = new Date(m.timestamp);
+      const oggi = new Date();
+      const ieri = new Date();
+      ieri.setDate(oggi.getDate() - 1);
+
+      const format = (d) => d.toISOString().split("T")[0];
+
+      if (format(dataMemo) === format(oggi)) {
+        return `Oggi alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })}`;
+      } else if (format(dataMemo) === format(ieri)) {
+        return `Ieri alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })}`;
+      } else {
+        return `${dataMemo.toLocaleDateString("it-IT")} alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })}`;
+      }
+    })()}
   </div>
 )}
+
 
 
 
