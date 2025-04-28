@@ -99,25 +99,7 @@ export default function OrdiniCaldi() {
     fetchOrdini();
 
     const unsubscribeMemo = onSnapshot(collection(db, "memo"), (snapshot) => {
-
-
-
-
-
-
-      const dati = snapshot.docs.map(doc => ({
-  id: doc.id,
-  testo: doc.data().testo,
-  timestamp: doc.data().timestamp
-}));
-
-
-
-
-
-
-
-
+      const dati = snapshot.docs.map(doc => ({ id: doc.id, testo: doc.data().testo }));
       setMemo(dati);
     });
 
@@ -354,66 +336,30 @@ const ripristinaOrdine = (id) => {
 
 
   <div className="flex gap-2 mb-4">
-
-
-
-
     <input
       type="text"
       className="flex-1 p-2 rounded border"
       placeholder="Scrivi un nuovo memo..."
       value={nuovoMemo}
       onChange={(e) => setNuovoMemo(e.target.value)}
-onKeyDown={(e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      aggiungiMemo();
-    }
-  }}
-/>    
-
-
-
-
-
-
-
-<button
-  onClick={aggiungiMemo}
-  className="px-3 bg-green-500 text-white rounded"
->
-  Aggiungi
-</button>
-
-
-
-
-
-
-
+    />
+    <button
+      onClick={async () => {
+        if (!nuovoMemo.trim()) return;
+        const ref = doc(collection(db, "memo"));
+        await setDoc(ref, { testo: nuovoMemo });
+        setNuovoMemo("");
+      }}
+      className="px-3 bg-green-500 text-white rounded"
+    >
+      Aggiungi
+    </button>
   </div>
   <div className="flex flex-wrap gap-2">
     {memo.map(m => (
       <div key={m.id} className="bg-yellow-200 text-black px-3 py-2 rounded-xl shadow min-w-[200px] relative">
         <button onClick={() => eliminaMemo(m.id)} className="absolute top-0 right-1 text-red-500" title="Elimina">✖</button>
-
-
-
-
-
-<p className="text-sm whitespace-pre-wrap">{m.testo}</p>
-{m.timestamp && (
-  <div className="text-[10px] text-gray-600 mt-1">
-    {new Date(m.timestamp).toLocaleString("it-IT", { hour: '2-digit', minute: '2-digit' })}
-  </div>
-)}
-
-
-
-
-
-
-
+        <p className="text-sm whitespace-pre-wrap">{m.testo}</p>
       </div>
     ))}
   </div>
