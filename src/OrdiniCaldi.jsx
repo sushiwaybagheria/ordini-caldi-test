@@ -255,13 +255,14 @@ const ripristinaOrdine = (id) => {
 <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8 relative">
   
   {/* 🔥 Pulsante Log */}
-  <a
-    href="/Storico"
-    className="text-gray-500 text-xs hover:text-white absolute top-2 right-2"
-    title="Vai allo storico memo"
-  >
-  ​◼️​​🪾​
-  </a>
+ <a
+  href="/Storico"
+  className="text-gray-500 text-[10px] hover:text-white absolute top-2 right-2"
+  title="Vai allo storico memo"
+>
+  ◼️
+</a>
+
 
 
 
