@@ -260,7 +260,7 @@ const ripristinaOrdine = (id) => {
     className="text-gray-500 text-xs hover:text-white absolute top-2 right-2"
     title="Vai allo storico memo"
   >
-    📜 Log
+   🗳️🏛️
   </a>
 
 
