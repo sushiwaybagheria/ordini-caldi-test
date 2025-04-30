@@ -159,14 +159,7 @@ const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
 
 
 
-{/* 🔄 Pulsante aggiornamento manuale */}
-<button
-  onClick={fetchOrdini}
-  className="absolute top-2 left-2 text-xs text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded shadow"
-  title="Forza aggiornamento ordini"
->
-  🔄 Aggiorna adesso
-</button>
+
 
 
 
@@ -274,6 +267,15 @@ const ripristinaOrdine = (id) => {
 
 
 <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8 relative">
+{/* 🔄 Pulsante aggiornamento manuale */}
+<button
+  onClick={fetchOrdini}
+  className="absolute top-2 left-2 text-xs text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded shadow"
+  title="Forza aggiornamento ordini"
+>
+  🔄 Aggiorna adesso
+</button>
+
   
   {/* 🔥 Pulsante Log */}
  <a
