@@ -462,7 +462,7 @@ const ripristinaOrdine = (id) => {
   });
 
   setNuovoMemo("");
-}}
+})}
 
 
 
@@ -492,6 +492,10 @@ const ripristinaOrdine = (id) => {
 
 {m.timestamp && (
   <div className="text-[10px] text-gray-600 mt-1">
+
+
+
+
     {(() => {
       const dataMemo = new Date(m.timestamp);
       const oggi = new Date();
