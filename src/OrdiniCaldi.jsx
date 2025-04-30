@@ -85,13 +85,24 @@ export default function OrdiniCaldi() {
           return ha * 60 + ma - (hb * 60 + mb);
         });
 
-        setOrdini(filtrati);
-      } catch (err) {
-        console.error("Errore fetch ordini:", err);
-      }
-    };
 
+
+         setOrdini(filtrati);
+    } catch (err) {
+      console.error("Errore fetch ordini:", err);
+    }
+  };
+
+  const forzaControlloOrdini = () => {
     fetchOrdini();
+  };
+
+  useEffect(() => {
+    fetchOrdini();
+
+
+
+
 
     const unsubscribeMemo = onSnapshot(collection(db, "memo"), (snapshot) => {
 
