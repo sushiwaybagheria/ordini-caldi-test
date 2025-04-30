@@ -130,11 +130,11 @@ const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
 
 
     return () => {
-      clearInterval(interval);
-      unsubscribe();
-      unsubscribeMemo();
- unsubTrillo();  // 👈 aggiunto questo
-    };
+  clearInterval(interval);
+  unsubscribe();
+  unsubscribeMemo();
+  unsubTrillo();  // 👈 aggiunto questo
+};
   }, []);
 
 
