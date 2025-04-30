@@ -291,12 +291,6 @@ const ripristinaOrdine = (id) => {
   {/* Fine Campanella */}
 
 
-<button
-  onClick={forzaControlloOrdini}
-  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded shadow text-sm"
->
-  🔁 Forza controllo ordini ora
-</button>
 
 
 
