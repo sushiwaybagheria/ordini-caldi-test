@@ -2,6 +2,12 @@ import { useState, useEffect } from "react";
 import { doc, setDoc, getDoc, collection, onSnapshot, deleteDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
+
+
+
+
+
+
 const STAGE_COLORS = {
   CONFERMATO: "bg-white/30",
   "DA PREPARARE": "bg-yellow-300",
@@ -89,19 +95,26 @@ export default function OrdiniCaldi() {
 
     const unsubscribeMemo = onSnapshot(collection(db, "memo"), (snapshot) => {
 
+
+
+
+
+
 const dati = snapshot.docs.map(doc => ({
   id: doc.id,
   testo: doc.data().testo,
   timestamp: doc.data().timestamp
 }));
 
-
-      setMemo(dati);
-    });
-
+// Riordina dal più recente al più vecchio
 dati.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-      setMemo(dati);
-    });
+
+setMemo(dati);
+}); 
+
+
+
+
 
 
     const interval = setInterval(fetchOrdini, 30000);
@@ -130,18 +143,12 @@ const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
 
 
     return () => {
-  clearInterval(interval);
-  unsubscribe();
-  unsubscribeMemo();
-  unsubTrillo();  // 👈 aggiunto questo
-};
+      clearInterval(interval);
+      unsubscribe();
+      unsubscribeMemo();
+ unsubTrillo();  // 👈 aggiunto questo
+    };
   }, []);
-
-
-
-
-
-
 
   const salvaStatoOrdine = async (ordine) => {
     const ref = doc(db, "ordini", ordine.id.toString());
@@ -191,36 +198,82 @@ const ripristinaOrdine = (id) => {
 };
 
 
+
+
+
+
+
+
+
   const eliminaMemo = async (id) => {
-    const memoRef = doc(db, "memo", id);
-    const snapshot = await getDoc(memoRef);
-    const memoData = snapshot.exists() ? snapshot.data() : null;
+  // 🔥 1. Prima recupera il memo da cancellare
+  const memoDaCancellare = memo.find(m => m.id === id);
 
-    await deleteDoc(memoRef);
+  if (memoDaCancellare) {
+    // 🔥 2. Scrivi nel log prima di cancellarlo
+    const logRef = doc(collection(db, "log_memo"));
+    await setDoc(logRef, {
+      testo: memoDaCancellare.testo,
+      azione: "cancellato",
+      timestamp: Date.now(),
+      idMemo: id
+    });
+  }
 
-    if (memoData) {
-      const logRef = doc(collection(db, "log_memo"));
-      await setDoc(logRef, {
-        testo: memoData.testo,
-        azione: "cancellato",
-        timestamp: Date.now()
-      });
-    }
-  };
+  // 🔥 3. Ora cancella il memo
+  await deleteDoc(doc(db, "memo", id));
+};
+
+
+
+
+
+
 
   return (
-    <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8 relative">
-      {/* 🔥 Pulsante Log */}
-      <a
-        href="/Storico"
-        className="text-gray-400 text-[10px] hover:text-white absolute top-2 right-2"
-        title="Vai allo storico memo"
-      >
-        ◼️
-      </a>
+<>
+  <style>
+    {`
+      @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .fade-in {
+        animation: fadeIn 0.4s ease-out;
+      }
+    `}
+  </style>
 
-      {/* 🔔 Campanella per Trillo */}
 
+
+
+
+
+
+
+
+<div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8 relative">
+  
+  {/* 🔥 Pulsante Log */}
+ <a
+  href="/Storico"
+  className="text-gray-500 text-[10px] hover:text-white absolute top-2 right-2"
+  title="Vai allo storico memo"
+>
+  ◼️
+</a>
+
+
+
+
+
+
+
+
+
+
+
+  {/* 🔔 Campanella per Trillo */}
       
 
 <button
@@ -366,23 +419,41 @@ const ripristinaOrdine = (id) => {
       onChange={(e) => setNuovoMemo(e.target.value)}
     />
     <button
-      onClick={async () => {
-        if (!nuovoMemo.trim()) return;
-        const ref = doc(collection(db, "memo"));
-
-
-
-      await setDoc(ref, { 
-  testo: nuovoMemo, 
-  timestamp: Date.now()  // 👈 aggiungiamo il timestamp
-});
 
 
 
 
 
-        setNuovoMemo("");
-      }}
+
+
+    onClick={async () => {
+  if (!nuovoMemo.trim()) return;
+
+  // 🔥 1. Salva il memo normale
+  const ref = doc(collection(db, "memo"));
+  await setDoc(ref, { 
+    testo: nuovoMemo, 
+    timestamp: Date.now()
+  });
+
+  // 🔥 2. Scrivi anche nel log
+  const logRef = doc(collection(db, "log_memo"));
+  await setDoc(logRef, {
+    testo: nuovoMemo,
+    azione: "creato",
+    timestamp: Date.now()
+  });
+
+  setNuovoMemo("");
+}}
+
+
+
+
+
+
+
+
       className="px-3 bg-green-500 text-white rounded"
     >
       Aggiungi
@@ -398,30 +469,37 @@ const ripristinaOrdine = (id) => {
 
 
 <p className="text-sm whitespace-pre-wrap">{m.testo}</p>
+
+
+
+
 {m.timestamp && (
   <div className="text-[10px] text-gray-600 mt-1">
-    {new Date(m.timestamp).toLocaleString("it-IT", { hour: '2-digit', minute: '2-digit' })}
-  </div>
-)}
+    {(() => {
+      const dataMemo = new Date(m.timestamp);
+      const oggi = new Date();
+      const ieri = new Date();
+      ieri.setDate(oggi.getDate() - 1);
 
+      const format = (d) => d.toISOString().split("T")[0];
 
-
-
-
-
-
-
-
-      </div>
-    ))}
-  </div>
-</div>
-
-
-
-
-
-
+      if (format(dataMemo) === format(oggi)) {
+        return `Oggi alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })}`;
+      } else if (format(dataMemo) === format(ieri)) {
+        return `Ieri alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })}`;
+      } else {
+         return `${dataMemo.toLocaleDateString("it-IT")} alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })}`;
+                }
+              })()}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
-  );
+  </div>
+
+</div> {/* 👈 QUI chiude il div p-4 min-h-screen */}
+
+</>
+);
 }
