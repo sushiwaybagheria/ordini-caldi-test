@@ -43,7 +43,11 @@ export default function OrdiniCaldi() {
   const [memo, setMemo] = useState([]);
   const [nuovoMemo, setNuovoMemo] = useState("");
 
-  useEffect(() => {
+  
+
+
+
+
     const fetchOrdini = async () => {
       try {
         const endpoint = "https://script.google.com/macros/s/AKfycbyNDg8p5oMOvOH4-v-hesX_AirmxhHH_ow3SXt5Ed3tceIjnox2ABWXo-2rOeUIHTk/exec";
@@ -90,6 +94,9 @@ export default function OrdiniCaldi() {
         console.error("Errore fetch ordini:", err);
       }
     };
+
+
+useEffect(() => {
 
     fetchOrdini();
 
@@ -149,6 +156,20 @@ const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
  unsubTrillo();  // 👈 aggiunto questo
     };
   }, []);
+
+
+
+{/* 🔄 Pulsante aggiornamento manuale */}
+<button
+  onClick={fetchOrdini}
+  className="absolute top-2 left-2 text-xs text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded shadow"
+  title="Forza aggiornamento ordini"
+>
+  🔄 Aggiorna adesso
+</button>
+
+
+
 
   const salvaStatoOrdine = async (ordine) => {
     const ref = doc(db, "ordini", ordine.id.toString());
