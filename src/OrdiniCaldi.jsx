@@ -2,12 +2,6 @@ import { useState, useEffect } from "react";
 import { doc, setDoc, getDoc, collection, onSnapshot, deleteDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
-
-
-
-
-
-
 const STAGE_COLORS = {
   CONFERMATO: "bg-white/30",
   "DA PREPARARE": "bg-yellow-300",
@@ -101,6 +95,11 @@ const dati = snapshot.docs.map(doc => ({
   timestamp: doc.data().timestamp
 }));
 
+
+      setMemo(dati);
+    });
+
+dati.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
       setMemo(dati);
     });
 
@@ -137,6 +136,12 @@ const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
  unsubTrillo();  // 👈 aggiunto questo
     };
   }, []);
+
+
+
+
+
+
 
   const salvaStatoOrdine = async (ordine) => {
     const ref = doc(db, "ordini", ordine.id.toString());
@@ -186,30 +191,36 @@ const ripristinaOrdine = (id) => {
 };
 
 
-
-
-
-
-
-
-
   const eliminaMemo = async (id) => {
-    await deleteDoc(doc(db, "memo", id));
+    const memoRef = doc(db, "memo", id);
+    const snapshot = await getDoc(memoRef);
+    const memoData = snapshot.exists() ? snapshot.data() : null;
+
+    await deleteDoc(memoRef);
+
+    if (memoData) {
+      const logRef = doc(collection(db, "log_memo"));
+      await setDoc(logRef, {
+        testo: memoData.testo,
+        azione: "cancellato",
+        timestamp: Date.now()
+      });
+    }
   };
 
   return (
-    <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8">
+    <div className="p-4 min-h-screen bg-gray-800 flex flex-col gap-8 relative">
+      {/* 🔥 Pulsante Log */}
+      <a
+        href="/Storico"
+        className="text-gray-400 text-[10px] hover:text-white absolute top-2 right-2"
+        title="Vai allo storico memo"
+      >
+        ◼️
+      </a>
 
+      {/* 🔔 Campanella per Trillo */}
 
-
-
-
-
-
-
-
-
-  {/* 🔔 Campanella per Trillo */}
       
 
 <button
