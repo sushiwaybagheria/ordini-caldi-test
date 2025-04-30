@@ -23,9 +23,9 @@ function calcolaTempoResiduo(dataISO, orarioConsegna) {
   dataOrdine.setHours(hh, mm, 0, 0);
   const adesso = new Date();
   const diffMin = Math.round((dataOrdine - adesso) / 60000);
-  if (diffMin > 0) return Consegna tra ${diffMin} min;
+ if (diffMin > 0) return `Consegna tra ${diffMin} min`;
   if (diffMin === 0) return "Consegna ora";
-  return In ritardo di ${Math.abs(diffMin)} min;
+  return `In ritardo di ${Math.abs(diffMin)} min`;
 }
 
 function staPerScadere(dataISO, orarioConsegna) {
