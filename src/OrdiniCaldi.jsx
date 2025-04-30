@@ -85,24 +85,13 @@ export default function OrdiniCaldi() {
           return ha * 60 + ma - (hb * 60 + mb);
         });
 
+        setOrdini(filtrati);
+      } catch (err) {
+        console.error("Errore fetch ordini:", err);
+      }
+    };
 
-
-         setOrdini(filtrati);
-    } catch (err) {
-      console.error("Errore fetch ordini:", err);
-    }
-  };
-
-  const forzaControlloOrdini = () => {
     fetchOrdini();
-  };
-
-  useEffect(() => {
-    fetchOrdini();
-
-
-
-
 
     const unsubscribeMemo = onSnapshot(collection(db, "memo"), (snapshot) => {
 
@@ -302,12 +291,6 @@ const ripristinaOrdine = (id) => {
   {/* Fine Campanella */}
 
 
-<button
-  onClick={forzaControlloOrdini}
-  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded shadow text-sm"
->
-  🔁 Forza controllo ordini ora
-</button>
 
 
 
@@ -462,7 +445,7 @@ const ripristinaOrdine = (id) => {
   });
 
   setNuovoMemo("");
-})}
+}}
 
 
 
@@ -492,10 +475,6 @@ const ripristinaOrdine = (id) => {
 
 {m.timestamp && (
   <div className="text-[10px] text-gray-600 mt-1">
-
-
-
-
     {(() => {
       const dataMemo = new Date(m.timestamp);
       const oggi = new Date();
