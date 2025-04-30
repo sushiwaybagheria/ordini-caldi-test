@@ -460,13 +460,14 @@ const eliminaMemo = async (id) => {
 
       const format = (d) => d.toISOString().split("T")[0];
 
-      if (format(dataMemo) === format(oggi)) {
-        return Oggi alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })};
-      } else if (format(dataMemo) === format(ieri)) {
-        return Ieri alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })};
-      } else {
-         return ${dataMemo.toLocaleDateString("it-IT")} alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })};
-                }
+   if (format(dataMemo) === format(oggi)) {
+  return `Oggi alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })}`;
+} else if (format(dataMemo) === format(ieri)) {
+  return `Ieri alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })}`;
+} else {
+  return `${dataMemo.toLocaleDateString("it-IT")} alle ${dataMemo.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' })}`;
+}
+
               })()}
             </div>
 
