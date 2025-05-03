@@ -5,7 +5,12 @@ import OrdiniCaldi from "./OrdiniCaldi"; // componente esistente
 const GoogleCalendarEmbed = () => {
   return (
     <iframe
-      src="https://calendar.google.com/calendar/embed?src=info%40sushiway.it&mode=AGENDA&ctz=Europe%2FRome"
+
+
+
+
+
+      src="https://calendar.google.com/calendar/u/0?cid=aW5mb0BzdXNoaXdheS5pdA"
       style={{ border: 0 }}
       width="100%"
       height="100%"
