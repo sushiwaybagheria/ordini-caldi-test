@@ -401,7 +401,8 @@ const ripristinaOrdine = (id) => {
 
 
       {/* ORDINI ATTIVI */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
         {ordini.filter(o => !o.ridotto && !o.completato && !o.archiviato).map(ordine => (
           <div key={ordine.id} className={`shadow-xl rounded-xl ${STAGE_COLORS[ordine.stato]} transition-all ${staPerScadere(ordine.data, ordine.orario) ? "border-4 border-yellow-400" : ""}`}>
             <div className="flex justify-between items-start p-2">
