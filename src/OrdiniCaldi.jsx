@@ -225,12 +225,15 @@ const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
 
   const salvaStatoOrdine = async (ordine) => {
     const ref = doc(db, "ordini", ordine.id.toString());
-    await setDoc(ref, {
+    
+
+await setDoc(ref, {
       stato: ordine.stato,
       ridotto: ordine.ridotto,
       completato: ordine.completato,
       archiviato: ordine.archiviato || false,
       note: ordine.note || ""
+preparazioneTimestamp: ordine.preparazioneTimestamp || null // 👈 aggiunto!
     });
   };
 
@@ -238,10 +241,22 @@ const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
 
 
 const aggiornaStato = async (id, nuovoStato) => {
+  const adesso = Date.now();
+
   setOrdini(prev => prev.map(o =>
     o.id === id
-      ? (salvaStatoOrdine({ ...o, stato: nuovoStato, completato: nuovoStato === "PRONTO" }),
-         { ...o, stato: nuovoStato, completato: nuovoStato === "PRONTO" })
+      ? (salvaStatoOrdine({
+           ...o,
+           stato: nuovoStato,
+           completato: nuovoStato === "PRONTO",
+           preparazioneTimestamp: nuovoStato === "DA PREPARARE" ? adesso : o.preparazioneTimestamp
+         }),
+         {
+           ...o,
+           stato: nuovoStato,
+           completato: nuovoStato === "PRONTO",
+           preparazioneTimestamp: nuovoStato === "DA PREPARARE" ? adesso : o.preparazioneTimestamp
+         })
       : o
   ));
 
@@ -250,7 +265,6 @@ const aggiornaStato = async (id, nuovoStato) => {
     await setDoc(refTrillo, { timestamp: Date.now() });
   }
 };
-
 
 
 
@@ -416,6 +430,20 @@ const ripristinaOrdine = (id) => {
               <ul className="list-disc list-inside text-xl mb-4">
                 {ordine.piatti.map((p, i) => (<li key={i}>{p}</li>))}
               </ul>
+
+
+
+
+{ordine.preparazioneTimestamp && ordine.stato === "DA PREPARARE" && (
+  <div className="text-xs text-gray-600 pt-2">
+    🕒 In preparazione dalle{" "}
+    {new Date(ordine.preparazioneTimestamp).toLocaleTimeString("it-IT", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}
+  </div>
+)}
+
               <textarea
                 className="w-full p-2 text-sm bg-white rounded border mt-8 mb-3"
                 rows={2}
@@ -423,6 +451,14 @@ const ripristinaOrdine = (id) => {
                 value={ordine.note}
                 onChange={(e) => aggiornaNota(ordine.id, e.target.value)}
               />
+
+
+
+
+
+
+
+
               <div className="flex justify-between pt-2 gap-1 flex-wrap">
                 <button onClick={() => aggiornaStato(ordine.id, "CONFERMATO")} className="p-2 bg-white border rounded">🥡</button>
                 <button onClick={() => aggiornaStato(ordine.id, "DA PREPARARE")} className="p-2 bg-white border rounded">🔔</button>
