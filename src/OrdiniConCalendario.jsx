@@ -37,7 +37,7 @@ const OrdiniConCalendario = () => {
 
 
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-auto">
   <div className="w-[80%] overflow-y-auto bg-gray-800">
     <OrdiniCaldi />
   </div>
