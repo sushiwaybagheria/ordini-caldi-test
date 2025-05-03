@@ -179,7 +179,11 @@ const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
     setOrdini(prev => prev.map(o =>
       o.id === id ? (salvaStatoOrdine({ ...o, stato: nuovoStato, completato: nuovoStato === "PRONTO" }), { ...o, stato: nuovoStato, completato: nuovoStato === "PRONTO" }) : o
     ));
-    if (nuovoStato === "DA PREPARARE") trillo.play();
+    if (nuovoStato === "DA PREPARARE") {
+  const refTrillo = doc(db, "trillo", "campanella");
+  await setDoc(refTrillo, { timestamp: Date.now() });
+}
+
   };
 
   const aggiornaNota = (id, nuovaNota) => {
