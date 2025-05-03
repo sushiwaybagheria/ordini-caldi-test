@@ -32,17 +32,17 @@ const OrdiniConCalendario = () => {
     <div className="flex flex-col h-screen">
       {/* 🔧 Banner di test */}
       <div className="bg-yellow-500 text-black text-sm font-bold text-center py-1 shadow z-10">
-        🔧 VERSIONE DI TEST – Non usare per la produzione
+        🔧 VERSIONE CON CALENDARIO 
       </div>
 
 
 
 
       <div className="flex flex-1 overflow-auto">
-  <div className="w-[80%] overflow-y-auto bg-gray-800">
+  <div className="w-[90%] overflow-y-auto bg-gray-800">
     <OrdiniCaldi />
   </div>
-  <div className="w-[20%] border-l border-gray-400 bg-white">
+  <div className="w-[10%] border-l border-gray-400 bg-white">
     <div className="h-full">
       <CalendarioEventi />
     </div>
