@@ -5,6 +5,7 @@ const API_KEY = "AIzaSyBAZmRNlnTHqRfPvW5SfYEq6ccdcK8AT64";
 const CALENDAR_ID = "iuqm2vrl9oi4ccoqps4utmhjoc@group.calendar.google.com";
 
 
+
 const CalendarioEventi = () => {
   const [eventi, setEventi] = useState([]);
 
@@ -43,15 +44,16 @@ const CalendarioEventi = () => {
           });
 
           const colore = getColoreEvento(evento.summary);
+          const titoloPulito = evento.summary.replace(/^TF\s*/i, '');
 
           return (
             <li
               key={evento.id}
-              className="p-2 rounded shadow bg-white border-l-4"
+              className="p-2 rounded shadow bg-white border-l-8"
               style={{ borderColor: colore }}
             >
               <div className="font-semibold">{orario}</div>
-              <div className="text-gray-800">{evento.summary}</div>
+              <div className="text-gray-800">{titoloPulito}</div>
             </li>
           );
         })}
