@@ -15,7 +15,7 @@ const GoogleCalendarEmbed = () => {
 
 
 
-    src="https://calendar.google.com/calendar/embed?src=iuqm2vrl9oi4ccoqps4utmhjoc@group.calendar.google.com&mode=DAY&ctz=Europe%2FRome"
+    src="https://calendar.google.com/calendar/embed?src=iuqm2vrl9oi4ccoqps4utmhjoc@group.calendar.google.com&mode=AGENDA&ctz=Europe%2FRome"
       style={{ border: 0 }}
       width="100%"
       height="100%"
@@ -43,7 +43,7 @@ const OrdiniConCalendario = () => {
   </div>
   <div className="w-[20%] border-l border-gray-400 bg-white">
     <div className="h-full">
-      <GoogleCalendarEmbed />
+      <CalendarioEventi />
     </div>
   </div>
 </div>
