@@ -48,6 +48,50 @@ export default function OrdiniCaldi() {
 
 
 
+
+
+const stampaOrdine = (ordine) => {
+  const contenuto = `
+    <html>
+      <head>
+        <style>
+          body { font-family: sans-serif; padding: 20px; }
+          h2 { font-size: 20px; margin-bottom: 10px; }
+          ul { padding-left: 20px; }
+          li { margin-bottom: 4px; }
+          .note { margin-top: 10px; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <h2>Ordine #${ordine.id} ${ordine.tipo === "RITIRO" ? "📦" : "🛵"} ${ordine.orario}</h2>
+        <div><strong>Cliente:</strong> ${ordine.cliente}</div>
+        <ul>
+          ${ordine.piatti.map(p => `<li>${p}</li>`).join("")}
+        </ul>
+        ${ordine.note ? `<div class="note"><strong>Note:</strong> ${ordine.note}</div>` : ""}
+      </body>
+    </html>
+  `;
+
+  const printWindow = window.open("", "_blank", "width=600,height=600");
+  printWindow.document.write(contenuto);
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+};
+
+
+
+
+
+
+
+
+
+
+
+
     const fetchOrdini = async () => {
       try {
         const endpoint = "https://script.google.com/macros/s/AKfycbyNDg8p5oMOvOH4-v-hesX_AirmxhHH_ow3SXt5Ed3tceIjnox2ABWXo-2rOeUIHTk/exec";
@@ -150,38 +194,6 @@ const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
 
 
 
-
-
-const stampaOrdine = (ordine) => {
-  const contenuto = `
-    <html>
-      <head>
-        <style>
-          body { font-family: sans-serif; padding: 20px; }
-          h2 { font-size: 20px; margin-bottom: 10px; }
-          ul { padding-left: 20px; }
-          li { margin-bottom: 4px; }
-          .note { margin-top: 10px; font-size: 14px; }
-        </style>
-      </head>
-      <body>
-        <h2>Ordine #${ordine.id} ${ordine.tipo === "RITIRO" ? "📦" : "🛵"} ${ordine.orario}</h2>
-        <div><strong>Cliente:</strong> ${ordine.cliente}</div>
-        <ul>
-          ${ordine.piatti.map(p => `<li>${p}</li>`).join("")}
-        </ul>
-        ${ordine.note ? `<div class="note"><strong>Note:</strong> ${ordine.note}</div>` : ""}
-      </body>
-    </html>
-  `;
-
-  const printWindow = window.open("", "_blank", "width=600,height=600");
-  printWindow.document.write(contenuto);
-  printWindow.document.close();
-  printWindow.focus();
-  printWindow.print();
-  printWindow.close();
-};
 
 
 
