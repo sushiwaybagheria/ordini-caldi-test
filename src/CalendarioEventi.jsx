@@ -7,29 +7,8 @@ const CALENDAR_ID = "iuqm2vrl9oi4ccoqps4utmhjoc@group.calendar.google.com";
 
 const CalendarioEventi = () => {
   const [eventi, setEventi] = useState([]);
-  const [colori, setColori] = useState({});
-  const [coloreCalendario, setColoreCalendario] = useState("#a4bdfc");
 
   useEffect(() => {
-    // 1. Carica la mappa dei colori (opzionale se c'è colorId)
-    fetch(`https://www.googleapis.com/calendar/v3/colors?key=${API_KEY}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.event) {
-          setColori(data.event);
-        }
-      });
-
-    // 2. Carica il colore del calendario
-    fetch(`https://www.googleapis.com/calendar/v3/users/me/calendarList/${encodeURIComponent(CALENDAR_ID)}?key=${API_KEY}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.backgroundColor) {
-          setColoreCalendario(data.backgroundColor);
-        }
-      });
-
-    // 3. Carica eventi del giorno
     const oggi = new Date();
     const inizio = new Date(oggi.setHours(0, 0, 0)).toISOString();
     const fine = new Date(new Date().setHours(23, 59, 59)).toISOString();
@@ -47,6 +26,10 @@ const CalendarioEventi = () => {
       });
   }, []);
 
+  const getColoreEvento = (titolo) => {
+    return titolo?.toUpperCase().startsWith("TF") ? "#51b749" : "#dc2127"; // verde o rosso
+  };
+
   return (
     <div className="p-2 text-sm overflow-y-auto h-full">
       <h2 className="font-bold text-center mb-2">📅 Prenotazioni di oggi</h2>
@@ -59,10 +42,7 @@ const CalendarioEventi = () => {
             minute: "2-digit",
           });
 
-          const colorId = evento.colorId;
-          const colore = colorId
-            ? colori[colorId]?.background || coloreCalendario
-            : coloreCalendario;
+          const colore = getColoreEvento(evento.summary);
 
           return (
             <li
