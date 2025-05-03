@@ -38,10 +38,10 @@ const OrdiniConCalendario = () => {
 
 
       <div className="flex flex-1 overflow-hidden">
-  <div className="w-[82%] overflow-y-auto bg-gray-800">
+  <div className="w-[80%] overflow-y-auto bg-gray-800">
     <OrdiniCaldi />
   </div>
-  <div className="w-[18%] border-l border-gray-400 bg-white overflow-hidden">
+  <div className="w-[20%] border-l border-gray-400 bg-white">
     <div className="h-full">
       <GoogleCalendarEmbed />
     </div>
