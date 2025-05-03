@@ -149,53 +149,6 @@ const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
 
 
 
-
-
-
-const stampaOrdine = (ordine) => {
-  const contenuto = `
-    <html>
-      <head>
-        <style>
-          body { font-family: sans-serif; padding: 20px; }
-          h2 { font-size: 20px; margin-bottom: 10px; }
-          ul { padding-left: 20px; }
-          li { margin-bottom: 4px; }
-          .note { margin-top: 10px; font-size: 14px; }
-        </style>
-      </head>
-      <body>
-        <h2>Ordine #${ordine.id} ${ordine.tipo === "RITIRO" ? "📦" : "🛵"} ${ordine.orario}</h2>
-        <div><strong>Cliente:</strong> ${ordine.cliente}</div>
-        <ul>
-          ${ordine.piatti.map(p => `<li>${p}</li>`).join("")}
-        </ul>
-        ${ordine.note ? `<div class="note"><strong>Note:</strong> ${ordine.note}</div>` : ""}
-      </body>
-    </html>
-  `;
-
-  const printWindow = window.open("", "_blank", "width=600,height=600");
-  printWindow.document.write(contenuto);
-  printWindow.document.close();
-  printWindow.focus();
-  printWindow.print();
-  printWindow.close();
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     return () => {
       clearInterval(interval);
       unsubscribe();
@@ -415,19 +368,6 @@ const ripristinaOrdine = (id) => {
                 <button onClick={() => aggiornaStato(ordine.id, "DA PREPARARE")} className="p-2 bg-white border rounded">🔔</button>
                 <button onClick={() => aggiornaStato(ordine.id, "IN PREPARAZIONE")} className="p-2 bg-white border rounded">🔥</button>
                 <button onClick={() => aggiornaStato(ordine.id, "PRONTO")} className="p-2 bg-white border rounded">✅</button>
-
-
-<button
-  onClick={() => stampaOrdine(ordine)}
-  className="p-2 bg-white border rounded"
-  title="Stampa ordine"
->
-  🖨️
-</button>
-
-
-
-
               </div>
               <div className="text-[11px] text-right text-gray-400 w-full pr-1">
                 {calcolaTempoResiduo(ordine.data, ordine.orario)}
