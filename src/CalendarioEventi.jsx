@@ -15,6 +15,7 @@ const CalendarioEventi = () => {
     fetch(`https://www.googleapis.com/calendar/v3/colors?key=${API_KEY}`)
       .then((res) => res.json())
       .then((data) => {
+console.log("Eventi ricevuti:", data.items);
         if (data.event) {
           setColori(data.event);
         }
@@ -32,6 +33,7 @@ const CalendarioEventi = () => {
     fetch(url)
       .then((res) => res.json())
       .then((data) => {
+console.log("Eventi ricevuti:", data.items);
         if (data.items) {
           setEventi(data.items);
         } else {
