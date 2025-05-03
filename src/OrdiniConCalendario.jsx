@@ -1,6 +1,7 @@
 // OrdiniConCalendario.jsx
 import React from "react";
 import OrdiniCaldi from "./OrdiniCaldi"; // componente esistente
+import CalendarioEventi from "./CalendarioEventi";
 
 const GoogleCalendarEmbed = () => {
   return (
