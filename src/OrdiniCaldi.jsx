@@ -175,16 +175,27 @@ const unsubTrillo = onSnapshot(doc(db, "trillo", "campanella"), (snap) => {
     });
   };
 
-  const aggiornaStato = (id, nuovoStato) => {
-    setOrdini(prev => prev.map(o =>
-      o.id === id ? (salvaStatoOrdine({ ...o, stato: nuovoStato, completato: nuovoStato === "PRONTO" }), { ...o, stato: nuovoStato, completato: nuovoStato === "PRONTO" }) : o
-    ));
-    if (nuovoStato === "DA PREPARARE") {
-  const refTrillo = doc(db, "trillo", "campanella");
-  await setDoc(refTrillo, { timestamp: Date.now() });
-}
 
-  };
+
+
+const aggiornaStato = async (id, nuovoStato) => {
+  setOrdini(prev => prev.map(o =>
+    o.id === id
+      ? (salvaStatoOrdine({ ...o, stato: nuovoStato, completato: nuovoStato === "PRONTO" }),
+         { ...o, stato: nuovoStato, completato: nuovoStato === "PRONTO" })
+      : o
+  ));
+
+  if (nuovoStato === "DA PREPARARE") {
+    const refTrillo = doc(db, "trillo", "campanella");
+    await setDoc(refTrillo, { timestamp: Date.now() });
+  }
+};
+
+
+
+
+
 
   const aggiornaNota = (id, nuovaNota) => {
     setOrdini(prev => prev.map(o =>
