@@ -232,7 +232,7 @@ await setDoc(ref, {
       ridotto: ordine.ridotto,
       completato: ordine.completato,
       archiviato: ordine.archiviato || false,
-      note: ordine.note || ""
+      note: ordine.note || "",
 preparazioneTimestamp: ordine.preparazioneTimestamp || null // 👈 aggiunto!
     });
   };
