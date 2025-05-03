@@ -34,17 +34,22 @@ const OrdiniConCalendario = () => {
         🔧 VERSIONE DI TEST – Non usare per la produzione
       </div>
 
+
+
+
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-5/6 overflow-y-auto bg-gray-800">
-          <OrdiniCaldi />
-        </div>
-        <div className="w-1/6 border-l border-gray-400 bg-white overflow-hidden">
-  <div className="h-full">
-    <GoogleCalendarEmbed />
+  <div className="w-[82%] overflow-y-auto bg-gray-800">
+    <OrdiniCaldi />
+  </div>
+  <div className="w-[18%] border-l border-gray-400 bg-white overflow-hidden">
+    <div className="h-full">
+      <GoogleCalendarEmbed />
+    </div>
   </div>
 </div>
 
-      </div>
+
+
     </div>
   );
 };
