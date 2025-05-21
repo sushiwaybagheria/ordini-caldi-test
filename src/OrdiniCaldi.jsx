@@ -1,8 +1,11 @@
+// ordini caldi test
+
 import { useState, useEffect } from "react";
 import { doc, setDoc, getDoc, collection, onSnapshot, deleteDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 
 
@@ -145,19 +148,21 @@ const stampaOrdine = (ordine) => {
 
 useEffect(() => {
 
-    fetchOrdini();
+     fetchOrdini();
 
+  // 🔐 Login automatico
+  signInWithEmailAndPassword(auth, "info@sushiway.it", "forzafabio")
+    .then((user) => console.log("✅ Login OK", user.user.email))
+    .catch((err) => console.error("❌ Login fallito:", err.message));
 
-// ordini caldi test
-
-// dentro useEffect, subito dopo fetchOrdini();
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    console.log("✅ Utente autenticato:", user.email);
-  } else {
-    console.warn("⚠️ Nessun utente autenticato!");
-  }
-});
+  // 🔄 Verifica utente
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log("✅ Utente autenticato:", user.email);
+    } else {
+      console.warn("⚠️ Nessun utente autenticato!");
+    }
+  });
 
 
 
