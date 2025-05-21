@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCAnrXWrGm5bGpa-m-TdnHDn9baWLo_h7I",
@@ -13,3 +14,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 // Aggiornamento per forzare nuovo commit - 19 aprile 2025
+export const auth = getAuth(app);
+
+// 🔐 Login automatico
+signInWithEmailAndPassword(auth, "info@sushiway,it", "forzafabio")
+  .then(user => console.log("✅ Login OK", user.user.email))
+  .catch(err => console.error("❌ Login fallito:", err.message));
