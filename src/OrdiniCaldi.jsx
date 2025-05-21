@@ -148,7 +148,7 @@ useEffect(() => {
     fetchOrdini();
 
 
-
+// ordini caldi test
 
 // dentro useEffect, subito dopo fetchOrdini();
 onAuthStateChanged(auth, (user) => {
